@@ -1,0 +1,81 @@
+{% extends "user/userbase.html" %} 
+
+{% block head %}
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css" />
+{% endblock %} 
+
+{% block content %}
+<div class="add-event container mt-4">
+  <br /><br /><br />
+  <h3>📆 Create an Event</h3>
+  <br />
+  <form id="eventForm" method="POST" action="{{ url_for('add_event', marker_id=marker_id, clique_id=clique_id) }}">
+    <div class="form-group">
+      <label for="datetime" style="color: #2c2c2c" class="form-label">Date & Time</label>
+      <input type="text" class="form-control" id="datetime" placeholder="Select date and time" required />
+
+      <input type="hidden" id="date" name="date" />
+      <input type="hidden" id="time" name="time" />
+    </div>
+
+    <div class="form-group">
+      <label for="description" style="color: #2c2c2c" class="form-label">Event description</label>
+      <textarea class="form-control" id="description" name="description" rows="3"
+        placeholder="Describe the event" maxlength="500" required></textarea>
+      <div id="charCount" style="color: grey; font-size: 0.9em">500 characters remaining</div>
+    </div>
+
+    <button type="save" class="btn btn-secondary" style="background-color: #6c5ce7">Save</button>
+    <a href="{{ url_for('maptest') }}" class="btn btn-secondary">Discard</a>
+  </form>
+</div>
+{% endblock %} 
+
+{% block scripts %}
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+  flatpickr('#datetime', {
+    enableTime: true,
+    dateFormat: 'Y-m-d H:i',
+    minDate: 'today',
+    time_24hr: true,
+
+    onChange: function (selectedDates, dateStr, instance) {
+      if (selectedDates.length > 0) {
+        const selected = selectedDates[0];
+        // Set hidden fields to receive separately
+        document.getElementById('date').value = selected.toISOString().split('T')[0];
+        document.getElementById('time').value = selected.toTimeString().slice(0, 5);
+      }
+    },
+  });
+
+  // Validate correctness before submitting the form
+  document.getElementById('eventForm').onsubmit = function (event) {
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+
+    const eventDateTime = new Date(date + 'T' + time);
+    const now = new Date();
+
+    if (eventDateTime < now) {
+      alert('The event date and time cannot be in the past. Please select a future date and time.');
+      event.preventDefault(); // Cancel submit
+    }
+  };
+</script>
+
+<script>
+  const descriptionInput = document.getElementById('description');
+  const charCountDisplay = document.getElementById('charCount');
+
+  descriptionInput.addEventListener('input', function () {
+    const remaining = 500 - descriptionInput.value.length;
+    charCountDisplay.textContent = `${remaining} characters remaining`;
+  });
+</script>
+{% endblock %}

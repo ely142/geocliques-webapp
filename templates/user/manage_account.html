@@ -1,0 +1,98 @@
+{% extends "user/userbase.html" %} 
+
+{% block content %}
+<div class="manage_account">
+  <div class="container mt-9">
+    <h2>Delete Your Account</h2>
+    <p class="warning">⚠️ This action is permanent and cannot be undone.</p>
+    <button class="delete-btn" onclick="openModal()">Delete My Account</button>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <h3>Are you sure?</h3>
+      <p>
+        Deleting your account will erase all your reviews, personal data, and transfer admin control to other users in any cliques you’ve managed.
+        This cannot be recovered.
+      </p>
+
+      <!-- Hidden Password Section -->
+      <div id="passwordSection" style="display: none; margin-top: 1rem">
+        <label for="deletePassword">Enter your password to confirm:</label>
+        <input type="password" id="deletePassword" class="form-control mt-2" placeholder="••••••••" />
+      </div>
+
+      <div class="modal-buttons mt-3">
+        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+        <form id="deleteForm" method="POST" action="{{ url_for('delete_account') }}" style="display: inline">
+          <button type="button" class="confirm-delete" onclick="askForPassword()">Yes, Delete</button>
+          <input type="hidden" name="confirmed" value="true" />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 
+
+{% block scripts %}
+<script>
+  const modal = document.getElementById('deleteModal');
+
+  function openModal() {
+    modal.style.display = 'block';
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+
+    const passwordInput = document.getElementById('deletePassword');
+    const passwordSection = document.getElementById('passwordSection');
+
+    passwordInput.value = '';
+    passwordSection.style.display = 'none';
+  }
+
+  // Close modal if user clicks outside it
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      closeModal();
+    }
+  };
+
+  function askForPassword() {
+    const passwordSection = document.getElementById('passwordSection');
+    const passwordInput = document.getElementById('deletePassword');
+
+    if (passwordSection.style.display === 'none') {
+      passwordSection.style.display = 'block';
+      passwordInput.focus();
+      return;
+    }
+
+    const password = passwordInput.value;
+
+    // If empty, just return
+    if (!password) {
+      alert('Please enter your password to continue.');
+      return;
+    }
+
+    fetch('verify-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: password }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.valid) {
+          document.getElementById('deleteForm').submit();
+        } else {
+          alert('Incorrect password. Please try again.');
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      });
+  }
+</script>
+{% endblock %}

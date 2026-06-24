@@ -1,0 +1,524 @@
+{% extends "user/userbase.html" %} 
+
+{% block head %}
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css" />
+{% endblock %} 
+
+{% block content %}
+<div style="height: 100vh; overflow-y: scroll">
+  <div class="container mt-5 pt-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center mb-3">
+        <button type="button" style="background-color: transparent; border: none; padding: 0; outline: none; position: relative"
+          title="Click the profile photo to update it" data-toggle="modal" data-target="#editPhotoModal"
+          data-backdrop="static" data-keyboard="false">
+          {% if current_user.picture != 'default.jpg' %}
+            <img src="{{ url_for('static', filename='assets/avatars_profile_pics/' + current_user.picture) }}" alt="Profile Picture"
+              style="width: 5rem; height: 5rem; border-radius: 50%; object-fit: cover; margin-right: 1rem"/>
+          {% else %}
+            <i class="bi bi-person-circle" style="color: #2c2c2c; font-size: 5rem; margin-right: 1rem"></i>
+          {% endif %}
+          <div class="edit-photo-overlay">
+            <i class="bi bi-pencil-fill"></i>
+          </div>
+        </button>
+
+        <div class="user-info p-3">
+          <h5 class="mb-2 text-dark">
+            <i class="bi bi-person-fill mr-2"></i> Username:
+            <span class="font-weight-normal">{{ name }}</span>
+          </h5>
+          <h5 class="mb-0 text-dark">
+            <i class="bi bi-envelope-fill mr-2"></i> Email:
+            <span class="font-weight-normal">{{ current_user.email }}</span>
+          </h5>
+        </div>
+
+        <div class="modal fade" id="editPhotoModal" tabindex="-1" role="dialog" aria-labelledby="editPhotoModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <form id="picForm" method="POST" enctype="multipart/form-data" action="{{ url_for('update_profile_pic', user_id=current_user.id) }}">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="editPhotoModalLabel">Edit Avatar Profile Photo</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+
+                <div class="modal-body">
+                  {% if show_avatars %} {% if current_user.picture != 'default.jpg' %}
+                    <img src="{{ url_for('static', filename='assets/avatars_profile_pics/' + current_user.picture) }}"
+                      class="img-thumbnail mb-3" style="width: 150px; height: 150px; object-fit: cover"/>
+                    <p class="text-muted">Choose a new avatar photo to replace the current one.</p>
+                  {% else %}
+                    <i class="bi bi-person-circle mb-3" style="font-size: 5rem; color: #ccc"></i>
+                    <p class="text-muted">No avatar photo yet. Choose one below!</p>
+                  {% endif %}
+
+                  <div class="avatar-grid d-flex flex-wrap justify-content-center">
+                    {% for i in range(1, 16) %}
+                      <div class="avatar-item m-2">
+                        <img src="{{ url_for('static', filename='assets/avatars_profile_pics/pic' + i|string + '.png') }}"
+                          class="avatar-option img-fluid" onclick="selectAvatar('pic{{ i }}.png', this)"/>
+                      </div>
+                    {% endfor %}
+                  </div>
+
+                  <input type="hidden" name="selected_avatar" id="selectedAvatar" />
+                  <p id="selectedAvatarText" class="text-muted text-center mt-2"></p>
+
+                  {% else %}
+                    <div class="alert alert-secondary text-center" role="alert">
+                      <h5 class="alert-heading">🔒 Feature Restricted</h5>
+                      <p>Avatar customization is disabled in the public open-source repository to comply with external media licensing restrictions.</p>
+                      <hr />
+                      <p class="mb-0 small">All users are assigned a secure default avatar. Premium sets are available in the local dev environment.</p>
+                    </div>
+                  {% endif %}
+                </div>
+
+                {% if show_avatars %}
+                  <div class="modal-footer">
+                    {% if current_user.picture != 'default.jpg' %}
+                      <button type="submit" name="action" value="edit" class="btn btn-secondary">Save Photo</button>
+                      <button type="submit" name="action" value="delete" class="btn btn-secondary">Remove Photo</button>
+                    {% else %}
+                      <button type="submit" name="action" value="edit" class="btn btn-secondary">Save Photo</button>
+                    {% endif %}
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Discard</button>
+                  </div>
+                {% endif %}
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column">
+        <a href="{{ url_for('user_edit_user') }}" class="btn btn-secondary mb-2">Edit Name & Email</a>
+        <a href="{{ url_for('change_password') }}" class="btn btn-secondary mb-2">Change Password</a>
+        <a href="{{ url_for('manage_account') }}" class="btn btn-manage_account mb-2">Manage Account</a>
+      </div>
+    </div>
+    <hr />
+
+    <!-- Cliques Table -->
+    <h4 class="mt-5">🔗 Cliques</h4>
+    <div class="table-responsive mt-3">
+      <table id="cliques-table" class="table modern-members-table text-center">
+        <thead>
+          <tr>
+            <th>
+              <span id="cliqueNameFilterToggle" style="cursor: pointer">Name 🔍</span>
+              <div id="cliqueNameFilterBox" style="display: none; margin-top: 6px">
+                <input type="text" id="cliqueNameSearchInput" class="form-control form-control-sm" placeholder="Search name..."
+                  oninput="filterCliquesByName()"/>
+                <button class="btn btn-sm btn-secondary mt-1" onclick="resetCliquesNameFilter()">Reset</button>
+              </div>
+            </th>
+            <th>Description</th>
+            <th>User Status</th>
+            <th>Clique Type</th>
+            <th>Reviews Added / Total Markers</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if cliques %} 
+            {% for clique in cliques %}
+              <tr>
+                <td>{{ clique.name }}</td>
+                <td class="text-break">{{ clique.description }}</td>
+                <td>
+                  {% if clique.status == "admin" %} 
+                    Admin <span style="color: gold">👑</span>
+                  {% else %} 
+                    {{ clique.status|capitalize }} 
+                  {% endif %}
+                </td>
+                <td>{{ clique.visibility|capitalize }}</td>
+                <td>{{ clique.reviews_added }}</td>
+                <td>
+                  {% if clique.status == 'admin' %}
+                    <form
+                      action="{{ url_for('leave_clique', clique_id=clique.id) }}" method="POST"
+                      onsubmit="return confirm('Are you sure you want to leave this clique?');">
+                      <button type="submit" class="btn btn-sm btn-outline-danger mb-2">Leave</button>
+                    </form>
+                  <a href="{{ url_for('admin_control_room', clique_id=clique.id) }}" class="btn btn-sm btn-secondary">Admin Control Room</a>
+                  {% else %}
+                    <form
+                      action="{{ url_for('leave_clique', clique_id=clique.id) }}" method="POST"
+                      onsubmit="return confirm('Are you sure you want to leave this clique?');">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">Leave</button>
+                    </form>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %} 
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-muted">No available cliques.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Reviews Table -->
+    <h4 class="mt-5">📝 Your Reviews</h4>
+    <div class="table-responsive mt-3">
+      <table id="reviews-events-table" class="table modern-members-table text-center">
+        <thead>
+          <tr>
+            <th>
+              <span id="reviewCliqueFilterToggle" style="cursor: pointer">Clique 🔍</span>
+              <div id="reviewCliqueFilterBox" style="display: none; margin-top: 6px">
+                <input type="text" id="reviewCliqueSearchInput" class="form-control form-control-sm"
+                  placeholder="Search clique..." oninput="filterReviewsByClique()"/>
+                <button class="btn btn-sm btn-secondary mt-1" onclick="resetReviewCliqueFilter()">Reset</button>
+              </div>
+            </th>
+            <th>Marker</th>
+            <th>Review</th>
+            <th>Stars</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if reviews %} 
+            {% for review in reviews %}
+              <tr data-review-id="{{ review.review_id }}" data-marker-id="{{ review.marker_id }}">
+                <td>{{ review.clique_name }}</td>
+                <td>{{ review.marker_name }}</td>
+                <td class="review-event-text">{{ review.commentary }}</td>
+                <td class="review-stars">
+                  {% for i in range(1, 6) %}
+                    <span class="star {% if i <= review.stars %}gold{% endif %}" data-value="{{ i }}">&#9733;</span>
+                  {% endfor %}
+                </td>
+                <td>
+                  <a href="{{ url_for('edit_review', marker_id=review.marker_id, next='settings') }}" class="btn btn-sm btn-secondary">Edit</a>
+                </td>
+              </tr>
+            {% endfor %} 
+          {% else %}
+            <tr>
+              <td colspan="5" class="text-muted">No available reviews.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Events Table -->
+    <h4 class="mt-5">🗓️ Your Events</h4>
+    <div class="table-responsive mt-3">
+      <table id="reviews-events-table2" class="table modern-members-table text-center">
+        <thead>
+          <tr>
+            <th>Clique</th>
+            <th>Marker</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if events %} 
+            {% for event in events %}
+              <tr>
+                <td>{{ event.clique_name }}</td>
+                <td>{{ event.marker_name }}</td>
+                <td class="review-event-text">{{ event.description }}</td>
+                <td>{{ event.date }}</td>
+                <td>{{ event.time }}</td>
+                <td>
+                  <button class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#editModal-{{ event.event_id }}"
+                    data-backdrop="static" data-keyboard="false">Edit</button>
+                  <form action="{{ url_for('update_event', event_id=event.event_id) }}" method="POST" style="display: inline">
+                    <input type="hidden" name="next" value="settings" />
+                    <button class="btn btn-sm btn-outline-danger" name="action" value="delete" type="submit">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %} 
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-muted">No available events.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    {% for event in events %}
+      <div class="modal fade" id="editModal-{{ event.event_id }}" role="dialog" aria-labelledby="editLabel-{{ event.event_id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editLabel-{{ event.event_id }}">Edit Event</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <form class="eventForm" method="POST" action="{{ url_for('update_event', event_id=event.event_id) }}">
+                <div class="form-group">
+                  <label for="datetime-{{ event.event_id }}">Date & Time</label>
+                  <input type="text" class="form-control datetimepicker" id="datetime-{{ event.event_id }}"
+                    placeholder="{{ event.date }} {{ event.time }}" required/>
+                  <input type="hidden" name="date" id="hidden-date-{{ event.event_id }}" value="{{ event.date }}" />
+                  <input type="hidden" name="time" id="hidden-time-{{ event.event_id }}" value="{{ event.time }}" />
+                </div>
+
+                <div class="form-group">
+                  <label for="eventDescription-{{ event.event_id }}">Event Description</label>
+                  <textarea class="form-control event-description" id="eventDescription-{{ event.event_id }}"
+                    name="description" rows="3" maxlength="500" required>{{ event.description }}</textarea>
+                  <div id="charCount-{{ event.event_id }}" style="color: grey; font-size: 0.9em">500 characters remaining</div>
+                </div>
+                <input type="hidden" name="next" value="settings" />
+                <button type="submit" name="action" value="edit" class="btn btn-secondary">Save Changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %} 
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const pad = (num) => num.toString().padStart(2, '0');
+
+    document.querySelectorAll('.datetimepicker').forEach(function (input) {
+      const eventId = input.id.split('-')[1];
+      const hiddenDate = document.getElementById(`hidden-date-${eventId}`);
+      const hiddenTime = document.getElementById(`hidden-time-${eventId}`);
+
+      const initialValue = hiddenDate.value && hiddenTime.value ? `${hiddenDate.value} ${hiddenTime.value}` : '';
+
+      flatpickr(input, {
+        enableTime: true,
+        dateFormat: 'Y-m-d H:i',
+        defaultDate: initialValue || null,
+        minDate: 'today',
+        time_24hr: true,
+        onReady: function (selectedDates, dateStr, instance) {
+          updateMinTime(instance);
+        },
+        onChange: function (selectedDates, dateStr, instance) {
+          if (selectedDates.length > 0) {
+            const selected = selectedDates[0];
+            const date = selected.toISOString().split('T')[0];
+            const time = selected.toTimeString().slice(0, 5);
+            hiddenDate.value = date;
+            hiddenTime.value = time;
+          }
+
+          updateMinTime(instance);
+        },
+      });
+
+      function updateMinTime(fpInstance) {
+        const selectedDate = fpInstance.selectedDates[0];
+        const today = new Date();
+
+        if (!selectedDate) return;
+
+        const selectedDateStr = selectedDate.toDateString();
+        const todayStr = today.toDateString();
+
+        if (selectedDateStr === todayStr) {
+          const nowHour = today.getHours();
+          const nowMinute = today.getMinutes();
+
+          const paddedTime = `${String(nowHour).padStart(2, '0')}:${String(nowMinute).padStart(2, '0')}`;
+          fpInstance.set('minTime', paddedTime);
+
+          // If current selected time is earlier than now, reset to now
+          const selectedTime = selectedDate.getHours() * 60 + selectedDate.getMinutes();
+          const currentTime = nowHour * 60 + nowMinute;
+          if (selectedTime < currentTime) {
+            selectedDate.setHours(nowHour, nowMinute, 0, 0);
+            fpInstance.setDate(selectedDate, true); 
+          }
+        } else {
+          fpInstance.set('minTime', '00:00');
+        }
+      }
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const maxChars = 500;
+
+    document.querySelectorAll('.event-description').forEach(function (textarea) {
+      const eventId = textarea.id.split('-')[1]; 
+      const charCountEl = document.getElementById(`charCount-${eventId}`);
+
+      function updateCharCount() {
+        const remaining = maxChars - textarea.value.length;
+        charCountEl.textContent = `${remaining} characters remaining`;
+      }
+
+      updateCharCount();
+
+      textarea.addEventListener('input', updateCharCount);
+    });
+  });
+
+  const form = document.getElementById('picForm');
+  const selectedAvatarInput = document.getElementById('selectedAvatar');
+  const selectedAvatarText = document.getElementById('selectedAvatarText');
+  let clickedButton = null;
+
+  // Handle avatar selection
+  function selectAvatar(filename, element) {
+    if (!selectedAvatarInput || !selectedAvatarText) return;
+
+    selectedAvatarInput.value = filename;
+    selectedAvatarText.textContent = 'Selected: ' + filename;
+
+    document.querySelectorAll('.avatar-option').forEach((img) => {
+      img.classList.remove('avatar-selected');
+    });
+
+    element.classList.add('avatar-selected');
+  }
+
+  form.addEventListener('click', function (e) {
+    if (e.target.type === 'submit') {
+      clickedButton = e.target;
+    }
+  });
+
+  form.addEventListener('submit', function (e) {
+    if (!selectedAvatarInput) return;
+
+    const avatarSelected = selectedAvatarInput.value.trim() !== '';
+
+    if (clickedButton && clickedButton.value === 'edit' && !avatarSelected) {
+      e.preventDefault();
+      alert('Please select an avatar before saving.');
+    }
+  });
+
+  $(document).on('hide.bs.modal', '.modal', function () {
+    var $focused = $(document).find(':focus');
+    if ($focused.length && $(this).has($focused).length) {
+      $focused.blur();
+    }
+
+    // If this is the avatar selection modal, perform extra cleanup
+    if (this.id === 'editPhotoModal') {
+      if (selectedAvatarInput && selectedAvatarText) {
+        selectedAvatarInput.value = '';
+        selectedAvatarText.textContent = 'No avatar selected';
+        document.querySelectorAll('.avatar-option').forEach((img) => {
+          img.classList.remove('avatar-selected');
+        });
+      }
+    }
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const modalInitialData = {};
+
+    $('div[id^="editModal-"]').on('shown.bs.modal', function () {
+      const modal = $(this);
+      const eventId = modal.attr('id').split('-')[1];
+      const form = modal.find('.eventForm');
+
+      modalInitialData[eventId] = {
+        date: $(`#hidden-date-${eventId}`).val(),
+        time: $(`#hidden-time-${eventId}`).val(),
+        description: $(`#eventDescription-${eventId}`).val(),
+      };
+    });
+
+    $('div[id^="editModal-"]').on('hidden.bs.modal', function () {
+      const modal = $(this);
+      const eventId = modal.attr('id').split('-')[1];
+
+      const data = modalInitialData[eventId];
+      if (!data) return;
+
+      $(`#hidden-date-${eventId}`).val(data.date);
+      $(`#hidden-time-${eventId}`).val(data.time);
+
+      const flatpickrInstance = document.getElementById(`datetime-${eventId}`)._flatpickr;
+      if (flatpickrInstance) {
+        flatpickrInstance.setDate(`${data.date} ${data.time}`, true);
+      }
+
+      $(`#eventDescription-${eventId}`).val(data.description).trigger('input');
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleCliques = document.getElementById('cliqueNameFilterToggle');
+    const boxCliques = document.getElementById('cliqueNameFilterBox');
+    if (toggleCliques && boxCliques) {
+      toggleCliques.addEventListener('click', () => {
+        boxCliques.style.display = boxCliques.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+
+    const toggleReviews = document.getElementById('reviewCliqueFilterToggle');
+    const boxReviews = document.getElementById('reviewCliqueFilterBox');
+    if (toggleReviews && boxReviews) {
+      toggleReviews.addEventListener('click', () => {
+        boxReviews.style.display = boxReviews.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+  });
+
+  function filterCliquesByName() {
+    const input = document.getElementById('cliqueNameSearchInput').value.trim().toLowerCase();
+    const rows = document.querySelectorAll('#cliques-table tbody tr');
+
+    rows.forEach((row) => {
+      const name = row.cells[0].innerText.toLowerCase();
+      row.style.display = name.startsWith(input) ? '' : 'none';
+    });
+  }
+
+  function resetCliquesNameFilter() {
+    document.getElementById('cliqueNameSearchInput').value = '';
+    const rows = document.querySelectorAll('#cliques-table tbody tr');
+    rows.forEach((row) => (row.style.display = ''));
+  }
+
+  function filterReviewsByClique() {
+    const input = document.getElementById('reviewCliqueSearchInput').value.trim().toLowerCase();
+    const rows = document.querySelectorAll('#reviews-events-table tbody tr');
+
+    rows.forEach((row) => {
+      const name = row.cells[0].innerText.toLowerCase();
+      row.style.display = name.startsWith(input) ? '' : 'none';
+    });
+  }
+
+  function resetReviewCliqueFilter() {
+    document.getElementById('reviewCliqueSearchInput').value = '';
+    const rows = document.querySelectorAll('#reviews-events-table tbody tr');
+    rows.forEach((row) => (row.style.display = ''));
+  }
+</script>
+{% endblock %}

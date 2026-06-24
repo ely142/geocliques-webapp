@@ -1,0 +1,690 @@
+{% extends "user/userbase.html" %} 
+
+{% block content %}
+<div style="height: 100vh; overflow-y: scroll">
+  <div class="container mt-5 pt-4">
+    <div class="d-flex flex-column align-items-center text-center pt-4 pb-0">
+      <h2 class="mb-3">Clique's Name: {{ clique.name }}</h2>
+
+      <div class="d-flex align-items-center justify-content-center">
+        <i
+          id="currentIcon"
+          class="bi {{ clique.icon }}"
+          style="font-size: 3rem; cursor: pointer; margin-right: 10px"
+          data-toggle="modal"
+          data-target="#exampleModal"
+        ></i>
+        <span>Clique's icon (click to edit)</span>
+      </div>
+    </div>
+
+    <form id="update_visibility" method="POST" action="{{ url_for('update_clique_type', clique_id=clique.id) }}">
+      <label for="visibility">Clique Visibility:</label>
+      <select name="visibility" id="visibility" class="form-select">
+        <option value="Private" {% if clique.visibility == "Private" %}selected{% endif %}>Private</option>
+        <option value="Protected" {% if clique.visibility == "Protected" %}selected{% endif %}>Protected</option>
+        <option value="Public" {% if clique.visibility == "Public" %}selected{% endif %}>Public</option>
+      </select>
+
+      <button type="submit" class="btn btn-secondary">Update</button>
+    </form>
+
+    <!-- Icon Selection Popup -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Choosing Clique Icon</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <form id="iconForm" method="POST" action="{{ url_for('update_icon', clique_id=clique.id) }}">
+              <div class="form-group">
+                <label class="form-label">
+                  Currently Selected Icon: <i id="selectedIconLabel" class="bi bi-star-fill" style="font-size: 24px"></i>
+                </label>
+
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <a
+                      class="nav-link active"
+                      id="tab-urban-icons"
+                      data-toggle="tab"
+                      href="#urban-icons"
+                      role="tab"
+                      aria-controls="urban-icons"
+                      aria-selected="true"
+                      >Urban</a
+                    >
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <a
+                      class="nav-link"
+                      id="tab-transportation-icons"
+                      data-toggle="tab"
+                      href="#transportation-icons"
+                      role="tab"
+                      aria-controls="transportation-icons"
+                      aria-selected="false"
+                      >Transportation</a
+                    >
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <a
+                      class="nav-link"
+                      id="tab-shopping-icons"
+                      data-toggle="tab"
+                      href="#shopping-icons"
+                      role="tab"
+                      aria-controls="shopping-icons"
+                      aria-selected="false"
+                      >Shopping</a
+                    >
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <a
+                      class="nav-link"
+                      id="tab-nature-icons"
+                      data-toggle="tab"
+                      href="#nature-icons"
+                      role="tab"
+                      aria-controls="nature-icons"
+                      aria-selected="false"
+                      >Nature</a
+                    >
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <a
+                      class="nav-link"
+                      id="tab-object-icons"
+                      data-toggle="tab"
+                      href="#object-icons"
+                      role="tab"
+                      aria-controls="object-icons"
+                      aria-selected="false"
+                      >Objects</a
+                    >
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <a
+                      class="nav-link"
+                      id="tab-food-icons"
+                      data-toggle="tab"
+                      href="#food-icons"
+                      role="tab"
+                      aria-controls="food-icons"
+                      aria-selected="false"
+                      >Food</a
+                    >
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <a
+                      class="nav-link"
+                      id="tab-signs-icons"
+                      data-toggle="tab"
+                      href="#signs-icons"
+                      role="tab"
+                      aria-controls="signs-icons"
+                      aria-selected="false"
+                      >Signs</a
+                    >
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <a
+                      class="nav-link"
+                      id="tab-people-icons"
+                      data-toggle="tab"
+                      href="#people-icons"
+                      role="tab"
+                      aria-controls="people-icons"
+                      aria-selected="false"
+                      >People</a
+                    >
+                  </li>
+                </ul>
+
+                <div class="tab-content form-group" id="myTabContent">
+                  <div class="tab-pane fade show active" id="urban-icons" role="tabpanel" aria-labelledby="tab-urban-icons">
+                    <div class="icon-grid" style="color: #2c2c2c">
+                      <i class="bi bi-house" data-icon="bi-house"></i>
+                      <i class="bi bi-house-door-fill" data-icon="bi-house-door-fill"></i>
+                      <i class="bi bi-house-fill" data-icon="bi-house-fill"></i>
+                      <i class="bi bi-building" data-icon="bi-building"></i>
+                      <i class="bi bi-building-fill" data-icon="bi-building-fill"></i>
+                      <i class="bi bi-buildings" data-icon="bi-buildings"></i>
+                      <i class="bi bi-buildings-fill" data-icon="bi-buildings-fill"></i>
+                      <i class="bi bi-hospital" data-icon="bi-hospital"></i>
+                      <i class="bi bi-hospital-fill" data-icon="bi-hospital-fill"></i>
+                      <i class="bi bi-bank" data-icon="bi-bank"></i>
+                      <i class="bi bi-bank2" data-icon="bi-bank2"></i>
+                      <i class="bi bi-shop-window" data-icon="bi-shop-window"></i>
+                      <i class="bi bi-shop" data-icon="bi-shop"></i>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="transportation-icons" role="tabpanel" aria-labelledby="tab-transportation-icons">
+                    <div class="icon-grid" style="color: #2c2c2c">
+                      <i class="bi bi-bus-front" data-icon="bi-bus-front"></i>
+                      <i class="bi bi-bus-front-fill" data-icon="bi-bus-front-fill"></i>
+                      <i class="bi bi-car-front" data-icon="bi-car-front"></i>
+                      <i class="bi bi-car-front-fill" data-icon="bi-car-front-fill"></i>
+                      <i class="bi bi-airplane-fill" data-icon="bi-airplane-fill"></i>
+                      <i class="bi bi-airplane-engines-fill" data-icon="bi-airplane-engines-fill"></i>
+                      <i class="bi bi-airplane-engines" data-icon="bi-airplane-engines"></i>
+                      <i class="bi bi-airplane" data-icon="bi-airplane"></i>
+                      <i class="bi bi-scooter" data-icon="bi-scooter"></i>
+                      <i class="bi bi-bicycle" data-icon="bi-bicycle"></i>
+                      <i class="bi bi-taxi-front" data-icon="bi-taxi-fronts"></i>
+                      <i class="bi bi-train-front" data-icon="bi-train-front"></i>
+                      <i class="bi bi-train-front-fill" data-icon="bi-train-front-fill"></i>
+                      <i class="bi bi-truck" data-icon="bi-truck"></i>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="shopping-icons" role="tabpanel" aria-labelledby="tab-shopping-icons">
+                    <div class="icon-grid" style="color: #2c2c2c">
+                      <i class="bi bi-bag-fill" data-icon="bi-bag-fill"></i>
+                      <i class="bi bi-cart" data-icon="bi-cart"></i>
+                      <i class="bi bi-cart-fill" data-icon="bi-cart-fill"></i>
+                      <i class="bi bi-currency-dollar" data-icon="bi-currency-dollar"></i>
+                      <i class="bi bi-cash-coin" data-icon="bi-currency-dollar"></i>
+                      <i class="bi bi-bag" data-icon="bi-bag"></i>
+                      <i class="bi bi-bag-check" data-icon="bi-bag-check"></i>
+                      <i class="bi bi-bag-check-fill" data-icon="bi-bag-check-fill"></i>
+                      <i class="bi bi-bag-heart" data-icon="bi-bag-heart"></i>
+                      <i class="bi bi-bag-heart-fill" data-icon="bi-bag-heart-fill"></i>
+                      <i class="bi bi-bag-plus-fill" data-icon="bi-bag-plus-fill"></i>
+                      <i class="bi bi-handbag" data-icon="bi-handbag"></i>
+                      <i class="bi bi-handbag-fill" data-icon="bi-handbag-fill"></i>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="nature-icons" role="tabpanel" aria-labelledby="tab-nature-icons">
+                    <div class="icon-grid" style="color: #2c2c2c">
+                      <i class="bi bi-tree-fill" data-icon="bi-tree-fill"></i>
+                      <i class="bi bi-luggage-fill" data-icon="bi-luggage-fill"></i>
+                      <i class="bi bi-cloud-fill" data-icon="bi-cloud-fill"></i>
+                      <i class="bi bi-cloud-drizzle-fill" data-icon="bi-cloud-drizzle-fill"></i>
+                      <i class="bi bi-cloud-sun-fill" data-icon="bi-cloud-sun-fill"></i>
+                      <i class="bi bi-cloud-lightning-rain-fill" data-icon="bi-cloud-lightning-rain-fill"></i>
+                      <i class="bi bi-cloud-snow-fill" data-icon="bi-cloud-snow-fill"></i>
+                      <i class="bi bi-cloud-lightning-fill" data-icon="bi-cloud-lightning-fill"></i>
+                      <i class="bi bi-cloud-moon-fill" data-icon="bi-cloud-moon-fill"></i>
+                      <i class="bi bi-moon-fill" data-icon="bi-moon-fill"></i>
+                      <i class="bi bi-moon" data-icon="bi-moon"></i>
+                      <i class="bi bi-moon-stars" data-icon="bi-moon-stars"></i>
+                      <i class="bi bi-moon-stars-fill" data-icon="bi-moon-stars-fill"></i>
+                      <i class="bi bi-snow" data-icon="bi-snow"></i>
+                      <i class="bi bi-snow2" data-icon="bi-snow2"></i>
+                      <i class="bi bi-sun-fill" data-icon="bi-sun-fill"></i>
+                      <i class="bi bi-sun" data-icon="bi-sun"></i>
+                      <i class="bi bi-bug" data-icon="bi-bug"></i>
+                      <i class="bi bi-bug-fill" data-icon="bi-bug-fill"></i>
+                      <i class="bi bi-card-image" data-icon="bi-card-image"></i>
+                      <i class="bi bi-image-alt" data-icon="bi-image-alt"></i>
+                      <i class="bi bi-twitter" data-icon="bi-twitter"></i>
+                      <i class="bi bi-feather" data-icon="bi-feather"></i>
+                      <i class="bi bi-fire" data-icon="bi-fire"></i>
+                      <i class="bi bi-flower1" data-icon="bi-flower1"></i>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="object-icons" role="tabpanel" aria-labelledby="tab-object-icons">
+                    <div class="icon-grid" style="color: #2c2c2c">
+                      <i class="bi bi-book-fill" data-icon="bi-book-fill"></i>
+                      <i class="bi bi-laptop" data-icon="bi-laptop"></i>
+                      <i class="bi bi-gift" data-icon="bi-gift"></i>
+                      <i class="bi bi-balloon-fill" data-icon="bi-balloon-fill"></i>
+                      <i class="bi bi-balloon" data-icon="bi-balloon"></i>
+                      <i class="bi bi-balloon-heart-fill" data-icon="bi-balloon-heart-fill"></i>
+                      <i class="bi bi-balloon-heart" data-icon="bi-balloon-heart"></i>
+                      <i class="bi bi-palette" data-icon="bi-palette"></i>
+                      <i class="bi bi-brush-fill" data-icon="bi-brush-fill"></i>
+                      <i class="bi bi-pencil-fill" data-icon="bi-pencil-fill"></i>
+                      <i class="bi bi-controller" data-icon="bi-controller"></i>
+                      <i class="bi bi-headphones" data-icon="bi-headphones"></i>
+                      <i class="bi bi-camera-fill" data-icon="bi-camera-fill"></i>
+                      <i class="bi bi-camera-reels-fill" data-icon="bi-camera-reels-fill"></i>
+                      <i class="bi bi-alarm-fill" data-icon="bi-alarm-fill"></i>
+                      <i class="bi bi-award" data-icon="bi-award"></i>
+                      <i class="bi bi-bandaid" data-icon="bi-bandaid"></i>
+                      <i class="bi bi-bandaid-fill" data-icon="bi-bandaid-fill"></i>
+                      <i class="bi bi-hammer" data-icon="bi-hammer"></i>
+                      <i class="bi bi-wrench-adjustable" data-icon="bi-wrench-adjustable"></i>
+                      <i class="bi bi-cone-striped" data-icon="bi-cone-striped"></i>
+                      <i class="bi bi-cookie" data-icon="bi-cookie"></i>
+                      <i class="bi bi-dribbble" data-icon="bi-dribbble"></i>
+                      <i class="bi bi-life-preserver" data-icon="bi-life-preserver"></i>
+                      <i class="bi bi-dice-6" data-icon="bi-dice-6"></i>
+                      <i class="bi bi-sunglasses" data-icon="bi-sunglasses"></i>
+                      <i class="bi bi-backpack" data-icon="bi-backpack"></i>
+                      <i class="bi bi-ticket-perforated" data-icon="bi-ticket-perforated"></i>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="food-icons" role="tabpanel" aria-labelledby="tab-food-icons">
+                    <div class="icon-grid" style="color: #2c2c2c">
+                      <i class="bi bi-cup-fill" data-icon="bi-cup-fill"></i>
+                      <i class="bi bi-cup-hot-fill" data-icon="bi-cup-hot-fill"></i>
+                      <i class="bi bi-cup-straw" data-icon="bi-cup-straw"></i>
+                      <i class="bi bi-cake" data-icon="bi-cake"></i>
+                      <i class="bi bi-cake2-fill" data-icon="bi-cake2-fill"></i>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="signs-icons" role="tabpanel" aria-labelledby="tab-signs-icons">
+                    <div class="icon-grid" style="color: #2c2c2c">
+                      <i class="bi bi-gender-ambiguous" data-icon="bi-gender-ambiguous"></i>
+                      <i class="bi bi-gender-female" data-icon="bi-gender-female"></i>
+                      <i class="bi bi-gender-male" data-icon="bi-gender-male"></i>
+                      <i class="bi bi-exclamation-circle-fill" data-icon="bi-exclamation-circle-fill"></i>
+                      <i class="bi bi-ban icon-item" data-icon="bi-ban"></i>
+                      <i class="bi bi-ban-fill" data-icon="bi-ban-fill"></i>
+                      <i class="bi bi-heart-fill icon-item" data-icon="bi bi-heart-fill"></i>
+                      <i class="bi bi-heartbreak-fill icon-item" data-icon="bi-heartbreak-fill"></i>
+                      <i class="bi bi-chat-square-heart-fill" data-icon="bi-chat-square-heart-fill"></i>
+                      <i class="bi bi-star-fill icon-item" data-icon="bi-star-fill"></i>
+                      <i class="bi bi-activity" data-icon="bi-activity"></i>
+                      <i class="bi bi-asterisk" data-icon="bi-asterisk"></i>
+                      <i class="bi bi-arrow-through-heart" data-icon="bi-arrow-through-heart"></i>
+                      <i class="bi bi-arrow-through-heart-fill" data-icon="bi-arrow-through-heart-fill"></i>
+                      <i class="bi bi-music-note" data-icon="bi-music-note"></i>
+                      <i class="bi bi-music-note-beamed" data-icon="bi-music-note-beamed"></i>
+                      <i class="bi bi-hand-thumbs-down-fill" data-icon="bi-hand-thumbs-down-fill"></i>
+                      <i class="bi bi-hand-thumbs-up-fill" data-icon="bi-hand-thumbs-up-fill"></i>
+                      <i class="bi bi-lightning-fill" data-icon="bi-lightning-fill"></i>
+                      <i class="bi bi-yin-yang" data-icon="bi-yin-yang"></i>
+                    </div>
+                  </div>
+
+                  <div class="tab-pane fade" id="people-icons" role="tabpanel" aria-labelledby="tab-people-icons">
+                    <div class="icon-grid" style="color: #2c2c2c">
+                      <i class="bi bi-person-heart icon-item" data-icon="bi-person-heart"></i>
+                      <i class="bi bi-person-slash icon-item" data-icon="bi-person-slash"></i>
+                      <i class="bi bi-people" data-icon="bi-people"></i>
+                      <i class="bi bi-people-fill" data-icon="bi-people-fill"></i>
+                      <i class="bi bi-person-arms-up" data-icon="bi bi-person-arms-up"></i>
+                      <i class="bi bi-person-raised-hand" data-icon="bi-person-raised-hand"></i>
+                      <i class="bi bi-person-wheelchair" data-icon="bi-person-wheelchair"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hidden input to store the selected icon -->
+              <input type="hidden" id="selectedIconInput" name="selectedIcon" />
+
+              <button type="submit" name="action" value="edit" class="btn btn-secondary">Save Changes</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <h4 class="mt-5">👥 Members in Clique</h4>
+    <div class="table-responsive mt-3">
+      <table class="table modern-members-table text-center">
+        <thead>
+          <tr>
+            <th>
+              <span id="nameFilterToggle" style="cursor: pointer">Name 🔍</span>
+              <div id="nameFilterBox" style="display: none; margin-top: 6px">
+                <input type="text" id="nameSearchInput" class="form-control form-control-sm" placeholder="Search name..." oninput="filterByName()" />
+                <button class="btn btn-sm btn-secondary mt-1" onclick="resetNameFilter()">Reset</button>
+              </div>
+            </th>
+            <th>Reviews Added</th>
+            <th>Average Rating</th>
+            <th>User Content</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ admin_user.name }} <span style="color: gold">👑</span></td>
+            <td>{{ admin_review_count }}</td>
+            <td>{{ admin_avg_rating }}</td>
+            <td></td>
+            <td></td>
+          </tr>
+
+          {% for user in clique_users %}
+            <tr>
+              <td>{{ user.name }}</td>
+              <td>{{ user.reviews_added }}</td>
+              <td>{{ user.average_rating }}</td>
+
+              <td>
+                <div class="d-flex flex-column align-items-center gap-1">
+                  <a href="{{ url_for('user_reviews_map', user_id=user.id, clique_id=clique.id) }}" class="btn btn-sm btn-outline-secondary"
+                    ><i class="bi bi-chat-square-text"></i> All Reviews</a>
+                  <a href="{{ url_for('user_events_map', user_id=user.id, clique_id=clique.id) }}" class="btn btn-sm btn-outline-secondary"
+                    ><i class="bi bi-calendar-event"></i> All Events</a>
+                </div>
+              </td>
+
+              <td>
+                <div class="action-buttons d-flex flex-column align-items-center" style="gap: 6px">
+                  <form
+                    action="{{ url_for('kick_user', clique_id=clique.id, user_id=user.id) }}" method="POST"
+                    onsubmit="
+                      return confirm(
+                        'Kicking the user will remove them from the clique and delete all their reviews and events. If any marker has only their review, it will also be deleted. However, they can rejoin later unless banned. Are you sure?'
+                      );">
+                    <button type="submit" class="btn btn-sm btn-warning"><i class="bi bi-person-dash"></i> Kick User</button>
+                  </form>
+
+                  <form
+                    action="{{ url_for('ban_user', clique_id=clique.id, user_id=user.id) }}" method="POST"
+                    onsubmit="return confirmBanReason(this);">
+                    <input type="hidden" name="reason" />
+                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-person-slash"></i> Ban User</button>
+                  </form>
+
+                  <!-- Report User Button -->
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    data-toggle="modal"
+                    data-target="#reportModal-{{ user.id }}"
+                    data-backdrop="static"
+                    data-keyboard="false">
+                    <i class="bi bi-flag"></i> Report User
+                  </button>
+
+                  <form
+                    action="{{ url_for('send_admin_invitation', clique_id=clique.id, user_id=user.id) }}" method="POST"
+                    onsubmit="return confirm('Send an admin invitation to this user?');">
+                    <button type="submit" class="btn btn-sm btn-info" style="padding: 5px 10px; font-size: 0.9rem; border-radius: 16px">
+                      Make Admin Instead
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Report User Popup -->
+    {% for user in clique_users %}
+      <div class="modal fade" id="reportModal-{{ user.id }}" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <form method="POST" action="{{ url_for('report_user') }}">
+            <input type="hidden" name="user_id" value="{{ user.id }}" />
+            <input type="hidden" name="clique_id" value="{{ clique.id }}" />
+            <div class="modal-content text-dark">
+              <div class="modal-header">
+                <h5 class="modal-title">Want to report {{ user.name }} ?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span>&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>Select reason(s) for the report:</p>
+                <div class="d-flex align-items-center mb-2" style="padding: 4px 12px">
+                  <label for="bot-{{ user.id }}" class="mb-0" style="text-align: left; flex: 1">Bot-like activity</label>
+                  <div style="flex-shrink: 0">
+                    <input type="checkbox" name="reasons" value="bot like report" id="bot-{{ user.id }}" style="margin: 0" />
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center mb-2" style="padding: 4px 12px">
+                  <label for="bias-{{ user.id }}" class="mb-0" style="text-align: left; flex: 1">Overwhelmingly negative/positive</label>
+                  <div style="flex-shrink: 0">
+                    <input type="checkbox" name="reasons" value="overwhelming bias report" id="bias-{{ user.id }}" style="margin: 0" />
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center mb-2" style="padding: 4px 12px">
+                  <label for="hurtful-{{ user.id }}" class="mb-0" style="text-align: left; flex: 1">Hurtful language</label>
+                  <div style="flex-shrink: 0">
+                    <input type="checkbox" name="reasons" value="hurtful language report" id="hurtful-{{ user.id }}" style="margin: 0" />
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-secondary">Submit Report</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+
+    <!-- Banned Users Table -->
+    <h4 class="mt-5">🚫 Banned Users</h4>
+    <div class="table-responsive mt-3">
+      <table class="table modern-members-table text-center">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Ban Date</th>
+            <th>Reason</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if banned_users %} 
+            {% for banned in banned_users %}
+              <tr>
+                <td>{{ banned.name }}</td>
+                <td>{{ banned.ban_date }}</td>
+                <td>{{ banned.reason }}</td>
+                <td>
+                  <form
+                    action="{{ url_for('unban_user', clique_id=clique.id, user_id=banned.user_id) }}" method="POST"
+                    onsubmit="return confirm('Are you sure you want to unban this user?');">
+                    <button type="submit" class="btn btn-sm btn-unban"><i class="bi bi-person-check"></i> Unban</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %} 
+          {% else %}
+            <tr>
+              <td colspan="4" class="text-muted">No banned users yet.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Clique Analytics -->
+    <div class="mt-5">
+      <h4 class="mt-5">📈 Recent Clique Activity</h4>
+      <div class="d-flex justify-content-end align-items-center mb-3">
+        <span class="mr-2">Summarize activity in the past:</span>
+
+        {% set active_style = "btn btn-sm btn-chosen" %} 
+        {% set default_style = "btn btn-sm btn-not-chosen" %}
+        <a href="?range=week" class="btn btn-sm mr-2 {{ active_style if time_range == 'week' else default_style }}"> Week </a>
+        <a href="?range=month" class="btn btn-sm mr-2 {{ active_style if time_range == 'month' else default_style }}"> Month </a>
+        <a href="?range=year" class="btn btn-sm {{ active_style if time_range == 'year' else default_style }}"> Year </a>
+      </div>
+
+      <div class="row text-center">
+        <div class="col-md-4 mb-2">
+          <div class="card bg-success text-white">
+            <div class="card-body">
+              <h5>+{{ joined_count }} Members</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-2">
+          <div class="card bg-info text-white">
+            <div class="card-body">
+              <h5>+{{ review_count }} Reviews</h5>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-2">
+          <div class="card bg-warning text-dark">
+            <div class="card-body">
+              <h5>+{{ marker_count }} Markers</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-5 mb-5 p-4" style="background-color: white; border-radius: 12px; max-width: 900px; margin: 0 auto">
+    <h4 class="text-dark mb-4 text-center">
+      Clique activity in the past 
+      {% if time_range == 'month' %}12 months{% elif time_range == 'year' %}3 years{% else %}7 days{% endif %}:
+    </h4>
+    <canvas id="weeklyActivityChart" style="height: 300px"></canvas>
+  </div>
+</div>
+{% endblock %} 
+
+{% block scripts %}
+<script>
+  document.getElementById('update_visibility').addEventListener('submit', function (event) {
+    const selectedVisibility = document.getElementById('visibility').value;
+    const currentVisibility = '{{ clique.visibility }}';
+
+    if ((currentVisibility === 'Protected' || currentVisibility === 'Public') && selectedVisibility === 'Private') {
+      const confirmation = confirm(
+        'Are you sure you want to make this clique private? This action will prevent new members from joining and may affect the visibility of your clique.'
+      );
+
+      if (!confirmation) {
+        event.preventDefault();
+      }
+    }
+  });
+</script>
+
+<script>
+  function confirmBanReason(form) {
+    const reason = prompt('Enter reason for ban (max 100 characters):');
+    if (reason === null) return false;
+    form.reason.value = reason.substring(0, 100);
+    return true;
+  }
+</script>
+
+<script>
+  // Handle icon selection
+  const iconElements = document.querySelectorAll('.icon-grid i');
+  const selectedIconDisplay = document.getElementById('selectedIconLabel');
+  const selectedIcon = document.getElementById('selectedIconInput');
+
+  iconElements.forEach((icon) => {
+    icon.addEventListener('click', function () {
+      const iconClass = this.getAttribute('data-icon');
+      selectedIconLabel.className = 'bi ' + iconClass; // Update the icon next to the label
+
+      // Update the hidden input with the icon class
+      selectedIconInput.value = iconClass;
+    });
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('weeklyActivityChart').getContext('2d');
+  const weeklyChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ week_days|tojson }},
+      datasets: [
+        {
+          label: 'New Members',
+          data: {{ members_series|tojson }},
+          backgroundColor: '#28a745'  // Green
+        },
+        {
+          label: 'New Reviews',
+          data: {{ reviews_series|tojson }},
+          backgroundColor: '#17a2b8'  // Blue
+        },
+        {
+          label: 'New Markers',
+          data: {{ markers_series|tojson }},
+          backgroundColor: '#ffc107'  // Yellow
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Date'
+          }
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Count'
+          }
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('nameFilterToggle');
+    const box = document.getElementById('nameFilterBox');
+
+    toggle.addEventListener('click', () => {
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    });
+  });
+
+  function filterByName() {
+    const input = document.getElementById('nameSearchInput').value.trim().toLowerCase();
+    const rows = document.querySelectorAll('.modern-members-table tbody tr');
+
+    rows.forEach((row) => {
+      const name = row.cells[0].innerText.toLowerCase();
+      row.style.display = name.startsWith(input) ? '' : 'none';
+    });
+  }
+
+  function resetNameFilter() {
+    document.getElementById('nameSearchInput').value = '';
+    const rows = document.querySelectorAll('.modern-members-table tbody tr');
+    rows.forEach((row) => (row.style.display = ''));
+  }
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll("form[action='{{ url_for('report_user') }}']").forEach((form) => {
+      form.addEventListener('submit', function (e) {
+        const checkboxes = form.querySelectorAll("input[type='checkbox'][name='reasons']");
+        const atLeastOneChecked = Array.from(checkboxes).some((cb) => cb.checked);
+        if (!atLeastOneChecked) {
+          e.preventDefault();
+          alert('Please select at least one reason for the report.');
+        }
+      });
+    });
+
+    $(document).on('hide.bs.modal', '.modal', function () {
+      var $focused = $(document).find(':focus');
+      const form = $(this).find('form')[0];
+
+      if ($focused.length && $(this).has($focused).length) {
+        // Check if the modal contains the focused element and remove focus
+        $focused.blur();
+      }
+      form.reset(); 
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,220 @@
+{% extends "user/userbase.html" %} 
+
+{% block head %}
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css" />
+{% endblock %} 
+
+{% block content %}
+<div style="height: 100vh; overflow-y: scroll">
+  <div class="container mt-5 pt-4">
+    <!-- Events Table -->
+    <h4 class="mt-5 text-center edit-event-title">
+      🗓️ Edit Your Events on:<br />
+      <span>📍 The marker {{ marker.description }} in the Clique: {{ clique.name }}</span>
+    </h4>
+    <div class="table-responsive mt-3">
+      <table id="reviews-events-table" class="table modern-members-table text-center">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for event in events %}
+            <tr>
+              <td>{{ event.date }}</td>
+              <td>{{ event.time }}</td>
+              <td class="review-event-text">{{ event.description }}</td>
+              <td>
+                <button
+                  class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#editModal-{{ event.id }}" data-backdrop="static" 
+                  data-keyboard="false">Edit</button>
+                <form action="{{ url_for('update_event', event_id=event.id) }}" method="POST" style="display: inline">
+                  <input type="hidden" name="next" value="maptest" />
+                  <button class="btn btn-sm btn-outline-danger" name="action" value="delete" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+
+            <div class="modal fade" id="editModal-{{ event.id }}" role="dialog" aria-labelledby="editLabel-{{ event.id }}">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="editLabel-{{ event.id }}">Edit Event</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+
+                  <div class="modal-body">
+                    <form class="eventForm" method="POST" action="{{ url_for('update_event', event_id=event.id) }}">
+                      <div class="form-group">
+                        <label for="datetime-{{ event.id }}">Date & Time</label>
+                        <input type="text" class="form-control datetimepicker" id="datetime-{{ event.id }}"
+                          placeholder="{{ event.date }} {{ event.time }}" required/>
+                        <input type="hidden" name="date" id="hidden-date-{{ event.id }}" value="{{ event.date }}" />
+                        <input type="hidden" name="time" id="hidden-time-{{ event.id }}" value="{{ event.time }}" />
+                      </div>
+
+                      <div class="form-group">
+                        <label for="eventDescription-{{ event.id }}">Event Description</label>
+                        <textarea class="form-control event-description" id="eventDescription-{{ event.id }}" name="description"
+                          rows="3" maxlength="500" required>{{ event.description }}</textarea>
+                        <div id="charCount-{{ event.id }}" style="color: grey; font-size: 0.9em">500 characters remaining</div>
+                      </div>
+                      <button type="submit" name="action" value="edit" class="btn btn-secondary">Save Changes</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if not events %}
+        <div class="text-muted mt-3">You don't have events on this marker.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %} 
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const pad = (num) => num.toString().padStart(2, '0');
+
+    document.querySelectorAll('.datetimepicker').forEach(function (input) {
+      const eventId = input.id.split('-')[1];
+      const hiddenDate = document.getElementById(`hidden-date-${eventId}`);
+      const hiddenTime = document.getElementById(`hidden-time-${eventId}`);
+
+      const initialValue = hiddenDate.value && hiddenTime.value ? `${hiddenDate.value} ${hiddenTime.value}` : '';
+
+      flatpickr(input, {
+        enableTime: true,
+        dateFormat: 'Y-m-d H:i',
+        defaultDate: initialValue || null,
+        minDate: 'today',
+        time_24hr: true,
+        onReady: function (selectedDates, dateStr, instance) {
+          updateMinTime(instance);
+        },
+        onChange: function (selectedDates, dateStr, instance) {
+          if (selectedDates.length > 0) {
+            const selected = selectedDates[0];
+            const date = selected.toISOString().split('T')[0];
+            const time = selected.toTimeString().slice(0, 5);
+            hiddenDate.value = date;
+            hiddenTime.value = time;
+          }
+
+          updateMinTime(instance);
+        },
+      });
+
+      function updateMinTime(fpInstance) {
+        const selectedDate = fpInstance.selectedDates[0];
+        const today = new Date();
+
+        if (!selectedDate) return;
+
+        const selectedDateStr = selectedDate.toDateString();
+        const todayStr = today.toDateString();
+
+        if (selectedDateStr === todayStr) {
+          const nowHour = today.getHours();
+          const nowMinute = today.getMinutes();
+
+          const paddedTime = `${String(nowHour).padStart(2, '0')}:${String(nowMinute).padStart(2, '0')}`;
+          fpInstance.set('minTime', paddedTime);
+
+          // If current selected time is earlier than now, reset to now
+          const selectedTime = selectedDate.getHours() * 60 + selectedDate.getMinutes();
+          const currentTime = nowHour * 60 + nowMinute;
+          if (selectedTime < currentTime) {
+            selectedDate.setHours(nowHour, nowMinute, 0, 0);
+            fpInstance.setDate(selectedDate, true); // true = don't trigger onChange again
+          }
+        } else {
+          // If not today — reset minTime to 00:00
+          fpInstance.set('minTime', '00:00');
+        }
+      }
+    });
+
+    $(document).on('hide.bs.modal', '.modal', function () {
+      var $focused = $(document).find(':focus');
+      if ($focused.length && $(this).has($focused).length) {
+        $focused.blur();
+      }
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const maxChars = 500;
+
+    document.querySelectorAll('.event-description').forEach(function (textarea) {
+      const eventId = textarea.id.split('-')[1]; 
+      const charCountEl = document.getElementById(`charCount-${eventId}`);
+
+      function updateCharCount() {
+        const remaining = maxChars - textarea.value.length;
+        charCountEl.textContent = `${remaining} characters remaining`;
+      }
+
+      updateCharCount();
+
+      textarea.addEventListener('input', updateCharCount);
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const modalInitialData = {};
+
+    // Store the initial values when a modal is opened
+    $('.modal').on('shown.bs.modal', function () {
+      const modal = $(this);
+      const eventId = modal.attr('id').split('-')[1];
+      const form = modal.find('.eventForm');
+
+      modalInitialData[eventId] = {
+        date: $(`#hidden-date-${eventId}`).val(),
+        time: $(`#hidden-time-${eventId}`).val(),
+        description: $(`#eventDescription-${eventId}`).val(),
+      };
+    });
+
+    // Reset the values when the modal close
+    $('.modal').on('hidden.bs.modal', function () {
+      const modal = $(this);
+      const eventId = modal.attr('id').split('-')[1];
+
+      const data = modalInitialData[eventId];
+      if (!data) return;
+
+      $(`#hidden-date-${eventId}`).val(data.date);
+      $(`#hidden-time-${eventId}`).val(data.time);
+
+      const flatpickrInstance = document.getElementById(`datetime-${eventId}`)._flatpickr;
+      if (flatpickrInstance) {
+        flatpickrInstance.setDate(`${data.date} ${data.time}`, true);
+      }
+
+      $(`#eventDescription-${eventId}`).val(data.description).trigger('input');
+    });
+  });
+</script>
+{% endblock %}

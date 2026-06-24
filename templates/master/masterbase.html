@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="../static/assets/GC_fav.png" />
+    <title>Geo Cliques</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')}}" />
+    {% block head %}{% endblock %}
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand">Master Control Room</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+          <!-- Hide the login/registration navigation for logged-in users -->
+          {% if not logged_in: %}
+            <li class="nav-item">
+              <a class="nav-link nav-modern" href="{{ url_for('login') }}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link nav-modern" href="{{ url_for('register') }}">Register</a>
+            </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link nav-modern" href="{{ url_for('cliques') }}">Cliques</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-modern" href="{{ url_for('users') }}">Users</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-modern" href="{{ url_for('master_reports') }}">Reports</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-modern" href="{{ url_for('logout') }}">Log Out</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    {% block content %}{% endblock %} 
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

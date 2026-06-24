@@ -1,0 +1,18 @@
+{% extends "user/userbase.html" %} 
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="select-layer-title">🗺️ Select Map Layer</h2>
+  <form method="POST">
+    <div class="layer-grid">
+      {% for value, label in layers %} 
+        {% if value == selected_layer %}
+          <button type="submit" name="layer" value="{{ value }}" class="layer-btn active-layer">{{ label }}</button>
+        {% else %}
+          <button type="submit" name="layer" value="{{ value }}" class="layer-btn">{{ label }}</button>
+        {% endif %} 
+      {% endfor %}
+    </div>
+  </form>
+</div>
+{% endblock %}

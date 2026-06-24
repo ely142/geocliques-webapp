@@ -1,0 +1,41 @@
+{% extends "master/masterbase.html" %} 
+
+{% block content %}
+<div style="height: 100vh; overflow-y: scroll">
+  <div class="container mt-3 pt-4">
+    <h4 class="mt-5">🚩 Reported Users</h4>
+    <div class="table-responsive mt-3">
+      <table class="table modern-members-table text-center">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Clique</th>
+            <th>Type</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reports %}
+            <tr>
+              <td>{{ r.user.name }}</td>
+              <td>{{ r.clique.name }}</td>
+              <td>{{ r.type }}</td>
+              <td>
+                <form
+                  action="{{ url_for('delete_user_route', user_id=r.user.id) }}" method="POST"
+                  onsubmit="return confirm('This will delete the user, entire cliques if they are their admin, and their data from other cliques. Proceed?');"
+                  style="display: inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Delete user</button>
+                </form>
+                <form action="{{ url_for('delete_notification', id=r.id) }}" method="POST" style="display: inline">
+                  <button type="submit" class="btn btn-sm btn-secondary">Ignore</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

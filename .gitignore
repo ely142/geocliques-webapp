@@ -1,0 +1,9 @@
+venv/
+.env
+static/assets/map_keys.js
+instance/
+__pycache__/
+*.pyc
+static/assets/avatars_profile_pics/
+instance/
+.vscode

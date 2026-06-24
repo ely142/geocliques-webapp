@@ -1,0 +1,68 @@
+{% extends "master/masterbase.html" %} 
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+{% endblock %} 
+
+{% block content %}
+<div id="map-wrapper-master">
+  <div id="map-master"></div>
+</div>
+{% endblock %} 
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+<script>
+  const map = L.map('map-master').setView([31.0461, 34.8516], 8);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+  }).addTo(map);
+
+  fetch(`/clique-geojson/{{ clique.id }}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const layer = L.geoJSON(data, {
+        pointToLayer: function (feature, latlng) {
+          const props = feature.properties;
+          const title = props.marker_title;
+          const avg = props.average_review;
+          const total = props.total_reviews;
+          const reviews = props.reviews;
+          const events = props.events;
+
+          let popupContent = `<div style="font-family: 'Poppins', sans-serif; word-break: break-word;"><strong>${title}</strong>`;
+          popupContent += `<br><span style="color: gold;">★ ${avg.toFixed(2)} (${total} review${total !== 1 ? 's' : ''})</span>`;
+
+          if (reviews.length) {
+            popupContent += `<hr><div><strong>📝 Reviews:</strong></div><div style="max-height: 150px; overflow-y: auto;">`;
+            reviews.forEach((r) => {
+              popupContent += `<div style="margin-top: 4px;"><strong>${r.user}</strong>: <span style="color: gold;">${'★'.repeat(r.stars)}</span>`;
+              if (r.commentary) popupContent += `<br><em>${r.commentary}</em>`;
+              popupContent += `</div>`;
+            });
+          }
+
+          popupContent += `</div>`;
+
+          if (events.length) {
+            popupContent += `<hr><div><strong>🗓️ Events:</strong></div><div style="max-height: 150px; overflow-y: auto;">`;
+            events.forEach((e) => {
+              popupContent += `<div style="margin-top: 4px;"><strong>${e.user}</strong>: ${e.description} (${e.date} ${e.time})</div>`;
+            });
+          }
+
+          popupContent += `</div></div>`;
+
+          return L.marker(latlng).bindPopup(popupContent);
+        },
+      }).addTo(map);
+
+      if (data.length > 0) {
+        map.fitBounds(layer.getBounds());
+      }
+    })
+    .catch((error) => console.error('Error loading clique markers:', error));
+</script>
+{% endblock %}

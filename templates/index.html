@@ -1,0 +1,75 @@
+{% extends "base.html" %} 
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles-index.css') }}" />
+{% endblock %} 
+
+{% block navbar_brand_text %} 
+📍 Welcome to GeoCliques 
+{% endblock %} 
+
+{% block content %}
+<div class="container">
+  <div class="scroll-buttons">
+    <a href="#section1">Welcome</a>
+    <a href="#section2">About</a>
+    <a href="#section3">Tech Stack</a>
+    <a href="{{ url_for('user_guide') }}">User Guide</a>
+  </div>
+
+  <!-- Section 1 -->
+  <section id="section1" class="full-screen-section">
+    <div class="text-container">
+      <h1 class="welcome-title">Explore. Share. Connect.</h1>
+      <p class="description">A map-based social media, helping people with similar interests to share their favorite spots</p>
+      <a href="{{ url_for('register') }}" class="get-started-btn"> Get Started </a>
+    </div>
+    <div class="image-container">
+      <img src="{{ url_for('static', filename='assets/gc_landing_page_pic.png') }}" alt="Geo Cliques" />
+    </div>
+  </section>
+
+  <!-- Section 2 -->
+  <section id="section2" class="section2">
+    <ul>
+      <li>
+        <h3>Share recommendations with friends, co-workers, and people around the globe</h3>
+      </li>
+      <li>
+        <h3>Discover places shared by members from your communities</h3>
+      </li>
+      <li>
+        <h3>Create your own cliques, invite friends, and manage the clique as you see fit</h3>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Section 3 -->
+  <section id="section3" class="section">
+    <div>
+      <h4>Powered by:</h4>
+
+      <div class="powered-box-container">
+        {% set tech_links = { 'python': 'https://www.python.org/', 'javascript': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript', 'html5':
+        'https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5', 'css3': 'https://developer.mozilla.org/en-US/docs/Web/CSS', 'flask':
+        'https://flask.palletsprojects.com/', 'sqlalchemy': 'https://www.sqlalchemy.org/', 'leaflet': 'https://leafletjs.com/', 'bootstrap':
+        'https://getbootstrap.com/' } %} 
+        
+        {% for tech in ['python', 'javascript', 'html5', 'css3', 'flask', 'sqlalchemy', 'leaflet', 'bootstrap'] %}
+          <a href="{{ tech_links[tech] }}" target="_blank" rel="noopener noreferrer">
+            <div class="powered-box">
+              <img src="{{ url_for('static', filename='assets/logos/' + tech + '.svg') }}" alt="{{ tech }}" />
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-container">
+      <p>&copy; GeoCliques 2025</p>
+    </div>
+  </footer>
+</div>
+{% endblock %}

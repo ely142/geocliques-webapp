@@ -1,0 +1,153 @@
+{% extends "master/masterbase.html" %} 
+
+{% block content %}
+<div class="clique-edit-page" style="height: 100vh; overflow-y: scroll">
+  <div class="container mt-4">
+    <div class="d-flex flex-column align-items-center text-center pt-4 pb-3">
+      <h2 class="mb-3">Edit Clique: {{ clique.name }}</h2>
+    </div>
+
+    <!-- Members -->
+    <h4>👥 Members</h4>
+    <div class="scroll-box">
+      <ul>
+        {% for cu in clique.users %}
+          <li>
+            {% if cu.user.id == clique.admin_id %}
+              <span class="admin-user">{{ cu.user.name }} (Admin)</span>
+            {% else %}
+              <span>{{ cu.user.name }}</span>
+              <div class="d-flex align-items-center" style="gap: 6px">
+                <form action="{{ url_for('kick_user', clique_id=clique.id, user_id=cu.user.id) }}" method="POST"
+                  onsubmit="
+                    return confirm('Kicking the user will remove them from the clique and delete all their reviews. If any marker has only their review, it will also be deleted. However, they can rejoin later unless banned. Are you sure?');">
+                  <button type="submit" class="btn btn-sm btn-warning"><i class="bi bi-person-dash"></i> Kick</button>
+                </form>
+
+                <form action="{{ url_for('ban_user', clique_id=clique.id, user_id=cu.user.id) }}" method="POST" onsubmit="return confirmBanReason(this);">
+                  <input type="hidden" name="reason" />
+                  <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-person-slash"></i> Ban</button>
+                </form>
+
+                <form action="{{ url_for('transfer_admin', clique_id=clique.id, user_id=cu.user.id) }}" method="POST"
+                  onsubmit="return confirm('Are you sure you want to transfer admin authorities from the current admin to this user?');">
+                  <button type="submit" class="btn btn-sm btn-secondary">Make Admin</button>
+                </form>
+              </div>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Markers table -->
+    <h4 class="mt-5">📍 Markers</h4>
+    <div class="table-responsive mt-3">
+      <table class="table modern-members-table text-center">
+        <thead>
+          <tr>
+            <th>Marker Name</th>
+            <th>Reviews</th>
+            <th>Average Rating</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for um in clique.markers %}
+            <tr>
+              <td>{{ um.marker.description or "Untitled Marker" }}</td>
+              <td>{{ um.marker.total_reviews }}</td>
+              <td>{{ '%.2f' % um.marker.average_review if um.marker.total_reviews > 0 else "N/A" }}</td>
+              <td>
+                <form
+                  action="{{ url_for('remove_marker_from_clique', clique_id=clique.id, marker_id=um.marker.id) }}"
+                  method="POST" style="display: inline">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Reviews table -->
+    <h4 class="mt-5">📝 Reviews</h4>
+    <div class="table-responsive mt-3">
+      <table class="table modern-members-table text-center">
+        <thead>
+          <tr>
+            <th>Marker Name</th>
+            <th>Reviewer</th>
+            <th>Review</th>
+            <th>Stars</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for review in sorted_reviews %}
+            <tr>
+              <td>{{ review.marker.description or "Untitled Marker" }}</td>
+              <td>{{ review.user.name }}</td>
+              <td class="text-break">{{ review.commentary }}</td>
+              <td>{{ review.stars }}</td>
+              <td>
+                <form
+                  action="{{ url_for('delete_review_from_clique', review_id=review.id, clique_id=clique.id) }}"
+                  method="POST" style="display: inline">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Events table -->
+    <h4 class="mt-5">🗓️ Events</h4>
+    <div class="table-responsive mt-3">
+      <table class="table modern-members-table text-center">
+        <thead>
+          <tr>
+            <th>Marker Name</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Description</th>
+            <th>Made by</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for event in sorted_events %}
+            <tr>
+              <td>{{ event.marker.description or "Untitled Marker" }}</td>
+              <td>{{ event.date }}</td>
+              <td>{{ event.time }}</td>
+              <td class="text-break">{{ event.description }}</td>
+              <td>{{ event.user.name }}</td>
+              <td>
+                <form action="{{ url_for('update_event', event_id=event.id) }}" method="POST" style="display: inline">
+                  <button class="btn btn-sm btn-outline-danger" name="action" value="delete" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div style="height: 200px"></div>
+</div>
+{% endblock %} 
+
+{% block scripts %}
+<script>
+  function confirmBanReason(form) {
+    const reason = prompt('Enter reason for ban (max 100 characters):');
+    if (reason === null) return false;
+    form.reason.value = reason.substring(0, 100);
+    return true;
+  }
+</script>
+{% endblock %}

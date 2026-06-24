@@ -1,0 +1,56 @@
+{% extends "user/userbase.html" %} 
+
+{% block head %}
+<title>{{ user.name }}'s Reviewed Markers</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+{% endblock %} 
+
+{% block content %}
+<div id="map-content-wrapper">
+  <div id="map-content"></div>
+</div>
+{% endblock %} 
+
+{% block scripts %}
+<script>
+  const features = {{ features | tojson }};
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const map = L.map('map-content').setView([31.0461, 34.8516], 8);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const layer = L.geoJSON(features, {
+      pointToLayer: function (feature, latlng) {
+        const title = feature.properties.marker_title;
+        const created = feature.properties.is_creator;
+        const stars = '★'.repeat(feature.properties.stars);
+        const commentary = feature.properties.commentary;
+
+        let popupContent = `<div style="font-family: 'Poppins', sans-serif; word-break: break-word;"><strong>${title}</strong>`;
+        if (created) popupContent += `<br><em>(created by this user)</em>`;
+        popupContent += `<hr><div><strong>📝 Review: </strong><span style="color: gold;">${stars}</span></div>`;
+        popupContent += ``;
+        if (commentary) popupContent += `<br><em>${commentary}</em></div>`;
+
+        return L.marker(latlng).bindPopup(popupContent);
+      }
+
+    }).addTo(map);
+
+    if (features.length > 0) {
+      map.fitBounds(layer.getBounds());
+    } else {
+      console.warn("No markers to show.");
+    }
+
+    // Fix for potential layout issues on initial load
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,190 @@
+{% extends "master/masterbase.html" %} 
+
+{% block content %}
+<div style="height: 100vh; overflow-y: scroll">
+  <div class="container mt-3 pt-4">
+    <h4 class="mt-5">👥 Users</h4>
+
+    {% with messages = get_flashed_messages(with_categories=true) %} 
+      {% if messages %} 
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %} 
+      {% endif %} 
+    {% endwith %}
+
+    <div class="table-responsive mt-3">
+      <table class="table modern-members-table text-center">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in usersList %}
+            <tr id="user-row-{{ user.id }}">
+              <td>{{ user.id }}</td>
+              <td><span class="user-email">{{ user.email }}</span></td>
+              <td><span class="user-name">{{ user.name }}</span></td>
+              <td>
+                <button class="btn btn-sm btn-secondary edit-btn" data-user-id="{{ user.id }}">Edit</button>
+                <button class="btn btn-success save-btn d-none" data-user-id="{{ user.id }}">Save</button>
+                <button class="btn btn-sm btn-secondary discard-btn d-none" data-user-id="{{ user.id }}">Discard</button>
+
+                <form
+                  action="{{ url_for('delete_user_route', user_id=user.id) }}" method="POST"
+                  onsubmit="return confirm('Warning: Are you sure you want to delete this user?');" style="display: inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <h4 class="mt-5">🚫 Banned Users across all Cliques</h4>
+    <div class="table-responsive mt-3">
+      <table class="table modern-members-table text-center">
+        <thead>
+          <tr>
+            <th>Clique</th>
+            <th>Banned User</th>
+            <th>Reason</th>
+            <th>Admin</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ban in banned_users %}
+            <tr>
+              <td>{{ ban.clique_name }}</td>
+              <td>{{ ban.user_name }}</td>
+              <td>{{ ban.reason }}</td>
+              <td>{{ ban.admin_name }}</td>
+              <td>
+                <form action="{{ url_for('unban_user_master', clique_id=ban.clique_id, user_id=ban.user_id) }}" method="POST"
+                  onsubmit="return confirm('Are you sure you want to unban this user from the clique?');">
+                  <button type="submit" class="btn btn-sm btn-unban"><i class="bi bi-person-check"></i> Unban</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div style="height: 200px"></div>
+</div>
+{% endblock %} 
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let currentEditingRow = null;
+
+    document.querySelectorAll('.edit-btn').forEach((button) => {
+      button.addEventListener('click', function () {
+        let userId = this.getAttribute('data-user-id');
+        let row = document.getElementById('user-row-' + userId);
+
+        // If there is already a row being edited revert it back to its original state
+        if (currentEditingRow && currentEditingRow !== row) {
+          revertRowToNormal(currentEditingRow);
+        }
+
+        document.querySelectorAll('.save-btn').forEach((saveBtn) => {
+          saveBtn.classList.add('d-none');
+        });
+
+        document.querySelectorAll('.discard-btn').forEach((discardBtn) => {
+          discardBtn.classList.add('d-none');
+        });
+
+        document.querySelectorAll('.edit-btn').forEach((editBtn) => {
+          editBtn.classList.remove('d-none');
+        });
+
+        this.classList.add('d-none');
+        row.querySelector('.save-btn').classList.remove('d-none');
+        row.querySelector('.discard-btn').classList.remove('d-none');
+
+        let emailSpan = row.querySelector('.user-email');
+        let nameSpan = row.querySelector('.user-name');
+
+        // Store the original values
+        emailSpan.setAttribute('data-original', emailSpan.textContent);
+        nameSpan.setAttribute('data-original', nameSpan.textContent);
+        emailSpan.innerHTML = `<input type="text" value="${emailSpan.getAttribute('data-original')}" class="form-control user-email-input">`;
+        nameSpan.innerHTML = `<input type="text" value="${nameSpan.getAttribute('data-original')}" class="form-control user-name-input">`;
+
+        currentEditingRow = row;
+      });
+    });
+
+    document.querySelectorAll('.save-btn').forEach((button) => {
+      button.addEventListener('click', function () {
+        let userId = this.getAttribute('data-user-id');
+        let row = document.getElementById('user-row-' + userId);
+
+        let emailInput = row.querySelector('.user-email-input').value;
+        let nameInput = row.querySelector('.user-name-input').value;
+
+        fetch(`/edit_user/${userId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: emailInput,
+            name: nameInput,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              row.querySelector('.user-email').innerHTML = emailInput;
+              row.querySelector('.user-name').innerHTML = nameInput;
+
+              row.querySelector('.save-btn').classList.add('d-none');
+              row.querySelector('.discard-btn').classList.add('d-none');
+              row.querySelector('.edit-btn').classList.remove('d-none');
+
+              // Reset the currentEditingRow after saving
+              currentEditingRow = null;
+            } else {
+              alert('Error: ' + data.message);
+            }
+          });
+      });
+    });
+
+    document.querySelectorAll('.discard-btn').forEach((button) => {
+      button.addEventListener('click', function () {
+        let userId = this.getAttribute('data-user-id');
+        let row = document.getElementById('user-row-' + userId);
+
+        revertRowToNormal(row);
+        currentEditingRow = null;
+      });
+    });
+
+    // Function to revert a row to its original state
+    function revertRowToNormal(row) {
+      let emailSpan = row.querySelector('.user-email');
+      let nameSpan = row.querySelector('.user-name');
+
+      // Replace the input fields with the original text values
+      emailSpan.innerHTML = emailSpan.getAttribute('data-original') || emailSpan.innerHTML;
+      nameSpan.innerHTML = nameSpan.getAttribute('data-original') || nameSpan.innerHTML;
+
+      row.querySelector('.save-btn').classList.add('d-none');
+      row.querySelector('.discard-btn').classList.add('d-none');
+      row.querySelector('.edit-btn').classList.remove('d-none');
+    }
+  });
+</script>
+{% endblock %}

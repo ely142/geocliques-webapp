@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block navbar_brand_text %}
+📍 Welcome to GeoCliques
+{% endblock %}
+
+{% block content %}
+<div style="height: 100vh; overflow-y: scroll; background-color: #f0f0f0;">
+  <div id="top"></div>
+  <div class="guide-container">
+      <h1 class="mb-4" style="text-align: center;">🗺️ Getting Started with GeoCliques</h1>
+      <p class="lead" style="text-align: center;">Follow these 10 steps to get the most out of our platform and connect through shared places.</p>
+      <hr>
+
+      {% for step_num, step in [
+        (1, "👤 Set Up Your Profile"),
+        (2, "🔗 Join Cliques or Create Your Own"),
+        (3, "🗺️ Customize Your Map Home Page"),
+        (4, "📍 Add a Marker to a Clique"),
+        (5, "🗓️ Add an Event"),
+        (6, "🔔 Stay Updated"),
+        (7, "📰 Explore the Feed Page"),
+        (8, "🛠️ Your Power Hub - Admin Control Room"),
+        (9, "⚙️ The Settings Page"),
+        (10, "🚀 Your Turn")
+        ] 
+      %}
+
+        <div class="guide-step">
+          <h3>Step {{ step_num }}: {{ step }}</h3>
+          <p>
+
+          {% if step_num == 1 %}
+            After signing in, personalize your profile:<br>
+            <ul>
+              <li>Click the <strong>Settings</strong> button in the navigation bar.</li>
+              <li>Click on your profile image at the top.</li>
+              <li>Select a new avatar photo from the list to update your profile picture.</li>
+            </ul>
+
+          {% elif step_num == 2 %}
+            After signing in, you'll land on your Home Map page - currently empty, waiting for you to bring it to
+            life!<br>
+            Cliques are the heart of your experience. Cliques = groups of people who share a common interest tied to
+            specific places across the globe.
+            Each clique member can add his own spot or insight, making it a collaborative experience.<br><br>
+            <strong>To Join Existing Clique:</strong>
+            <ul>
+              <li>Tap the <strong>Feed</strong> button in the navigation bar.</li>
+              <li>Use the Search Bar to look up cliques by name or by topics that interest you.</li>
+            </ul>
+            <strong>To Create Your Own Clique:</strong>
+            <ul>
+              <li>Go to your Home Map.</li>
+              <li>Tap the <strong>+</strong> button in the bottom-right corner.</li>
+              <li>Fill in the clique details like name, icon, and description.</li>
+            </ul>
+            Once you've joined or created cliques, they'll appear on your Feed Page, and their markers will be
+            visible on your Home Map - based on your selected display preferences (more on that in the next step).
+
+          {% elif step_num == 3 %}
+            Your Home Map is your main dashboard to stay updated on clique activities, events, markers, and reviews - so
+            it's worth setting it up just the way you like.<br>
+            <ul>
+              <li><strong>Map Controls:</strong> Use the + / - buttons in the top-left corner to zoom in or out and
+                    explore different areas.</li><br>
+              <li><strong>Quick Action Buttons (Bottom-Right Corner):</strong>
+              <ul>
+                <li><strong>Map Layer Selector</strong> - Choose your preferred map style: standard, satellite,
+                    terrain, etc, based on what works best for you.</li>
+                <li><strong>Cliques Filter</strong> - Choose which clique markers to display on the map at any
+                    time, using any combination that suits your preferences.</li>
+                <li><strong>Create a Clique</strong> - Quickly start a new clique by clicking and filling out
+                    the details.</li>
+              </ul>
+            </ul>
+            Take control of your map to make it both useful and uniquely yours.
+
+            {% elif step_num == 4 %}
+              Mark special places and share them with the clique members:
+              <ul>
+                <li>Tap on the location you want to mark directly on your Home Map.</li>
+                <li>Select the clique you would like to add this marker to.</li>
+                <li>Fill in the details: name, description, and optionally your own review of the place.</li>
+                <li>You can always edit your review later by tapping the marker and selecting the <strong>Edit Review</strong> button.</li>
+              </ul>
+                Other clique members can also leave their own reviews and rate the place you shared, making it a collaborative experience.
+                <br><br>
+                By clicking on a marker within a certain clique, you'll be able to view detailed information about the place
+                you're interested in. This includes:
+              <ul>
+                <li><strong>Average Rating:</strong> See the total average rating given to the place by members of your
+                    clique. what works best for you.</li>
+                <li><strong>Member Reviews:</strong> Read reviews shared by other clique members about their experiences
+                    at the location. that suits your preferences.</li>
+                <li><strong>Upcoming Events:</strong> Discover any events related to the place (more on events in the next step).
+              </ul>
+                
+            {% elif step_num == 5 %}
+              Events are a great way to keep your clique engaged - whether it's a meetup, party, or special occasion
+              happening at a specific place marked in the clique. To add an event:
+              <ul>
+                <li>Tap the marker where you want the event to take place.</li>
+                <li>Tap the <strong>add event</strong> button and fill in the event details: date, time and description.</li>
+                <li>You can edit or delete the event anytime by tapping the <strong>Edit Event</strong> button next to it.</li>
+              </ul>
+              <strong>Visual Indicators:</strong> Markers with events will appear in blue.
+                If an event is happening within the next 3 days, the marker will also have a pulsing effect to help grab your attention.
+
+            {% elif step_num == 6 %}
+              In the navigation bar, tap the bell icon to open your notification panel. Here you'll find important updates, including:
+              <ul>
+                <li>Cliques join requests</li>
+                <li>Invitations or approvals</li>
+                <li>Alerts from cliques you're part of</li>
+              </ul>
+              <strong>Pro tip:</strong> When the <strong>bell icon</strong> turns yellow, it means you have new
+                notifications waiting - don't forget to check them!
+
+            {% elif step_num == 7 %}
+              The Feed Page is your hub for tracking your cliques and discovering new ones.<br>
+              Here's what you can do on the Feed page:
+              <ul>
+                <li>Get an instant overview of all your followed and created cliques.</li>
+                <li>Stay updated with the latest posts and markers from cliques you follow.</li>
+                <li>Discover new cliques with the search bar.</li>
+                <li>Track top contributors via the <strong>Cliques Checkboard Table</strong>.</li>
+              </ul>
+
+            {% elif step_num == 8 %}
+              Admin of a clique? Use the <strong>Admin Control Room</strong> to manage and customize your clique as you
+              wish. Here you can:
+              <ul>
+                <li>Customize the clique icon</li>
+                <li>Manage the clique members and their content on the clique.</li>
+                <li>Control banned users from the clique.</li>
+                <li>check out the analysis of the clique activity over the past week, month, or year - just to help you
+                    keep an eye on things!</li>
+              </ul>
+
+            {% elif step_num == 9 %}
+              The Settings page let you help keep track of all your activity within the app. Here, you can:
+              <ul>
+                <li>Edit your profile details and password</li>
+                <li>Easily access all your markers, reviews, and events across different cliques, with quick options to
+                    view, edit, or delete them.</li>
+                <li>Delete your account by clicking the <strong>Manage Account</strong> button - hopefully never needed.</li>
+              </ul>
+
+            {% elif step_num == 10 %}
+              Now that you know the app, it's time to dive in!<br>
+              Discover places, meet new people, and join or create cliques that match your passions - whether it's hiking
+              trails, food spots, or your co-workers' favorite hangouts.<br><br>
+              This is your space to connect, share, and explore. <strong>Let the journey begin!</strong>
+            {% endif %}
+
+          </p>
+        </div>
+      {% endfor %}
+
+      <div class="back-to-top">
+        <a href="#top" id="backToTopBtn" class="btn btn-primary"><i class="bi bi-arrow-up-circle-fill"></i> Back to Top</a>
+      </div>
+
+      <div class="faq-container">
+        <h2>FAQ</h2>
+
+        <details>
+          <summary>How can I delete my account?</summary>
+          <p>Sad to see you go! You can delete your account by going to the Settings page and selecting the
+            <strong>Manage Account</strong> button. You'll be asked to enter your password and confirm it to proceed.<br><br>
+            <strong>Please note:</strong>
+            Deleting your account is permanent. All your data, including any markers you've created, reviews, events,
+            and cliques that you are their admin will be permanently removed and cannot be recovered.
+          </p>
+        </details>
+
+        <details>
+          <summary>I'm the admin of a clique - how can I keep it from being deleted when I delete my account?</summary>
+          <p>If your clique is valuable to you and its members, but you still wish to delete your account, you can
+              transfer ownership to another trusted member.<br>To do this:
+            <ol>
+              <li>Go to the Admin Control Room page of the clique.</li>
+              <li>Use the 🔍 in the members table to find the member you want to make the new admin.</li>
+              <li>Click the <strong>Make Admin Instead</strong> button.</li>
+              <li>Fill in the required confirmation details.</li>
+            </ol>
+          </p>
+        </details>
+
+        <details>
+          <summary>What happens when I report a member in the clique I run?</summary>
+          <p>When an admin reports a user from their clique, the report is sent to our team for review.
+            We will analyze the user's activity in that clique and others to determine the appropriate action.
+            If you also wish to ban the user from your clique, be sure to submit the report first.</p>
+        </details>
+
+        <details>
+          <summary>How can I quickly find specific information in the tables on the platform?</summary>
+          <p>You can use the 🔍 icon that appears next to certain fields in the tables. It allows you to search
+            and filter the content, making it easier and faster to find exactly what you're looking for.</p>
+        </details>
+      </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('backToTopBtn').addEventListener('click', function (event) {
+        event.preventDefault();
+        document.getElementById('top').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "user/userbase.html" %} 
+
+{% block content %}
+<div class="container mt-5 edit-user-container" style="padding-top: 100px">
+  <div class="card shadow-sm p-4">
+    <h2 class="mb-4 text-center text-dark">🖊️ Edit Your Name and Email</h2>
+    <p class="text-muted text-center mb-4">To update only one field, simply re-enter your current value in the other.</p>
+    {% with messages = get_flashed_messages(with_categories=true) %} 
+      {% if messages %} 
+        {% for category, message in messages %} 
+          {% if category in ['danger'] %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endif %} 
+        {% endfor %} 
+      {% endif %} 
+    {% endwith %}
+    <form action="{{ url_for('update_user') }}" method="POST">
+      <div class="form-group">
+        <label for="new-name">New Name:</label>
+        <input type="text" id="new-name" name="name" autocomplete="name" class="form-control" required />
+      </div>
+
+      <div class="form-group">
+        <label for="new-email">New Email:</label>
+        <input type="email" id="new-email" name="email" autocomplete="email" class="form-control" required />
+      </div>
+      <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn btn-manage_account">Save Changes</button>
+        <a href="{{ url_for('settings') }}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

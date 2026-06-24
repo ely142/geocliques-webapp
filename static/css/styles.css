@@ -1,0 +1,1709 @@
+@import url(https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap);
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  background-color: #e9ecef;
+  font-family: 'Poppins', sans-serif;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3E1D6D', endColorstr='#092756', GradientType=1);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons Styles
+-------------------------------------------------------------------------- */
+
+/* Base button */
+.btn {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 4px 10px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Primary button */
+.btn-primary {
+  background-color: #6c5ce7;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 22px;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(108, 92, 231, 0.2);
+}
+
+.btn-primary:hover {
+  background-color: #5a4dd1;
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:focus:active {
+  background-color: #6c5ce7 !important;
+  color: #ffffff !important;
+  box-shadow: none;
+  transform: none;
+  outline: none;
+}
+
+/* Primary small button */
+.btn-primary-small {
+  background-color: #6c5ce7;
+  color: #ffffff;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(108, 92, 231, 0.2);
+}
+
+.btn-primary-small:hover {
+  background-color: #5a4dd1;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Secondary button */
+.btn-secondary {
+  background-color: #dcdcdc;
+  color: #2c2c2c;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(108, 92, 231, 0.2);
+}
+
+.btn-secondary:hover {
+  background-color: #626266;
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Secondary small button */
+.btn-info-small {
+  background-color: #f8f9fa;
+  color: #2c2c2c !important;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(108, 92, 231, 0.2);
+}
+
+.btn-info-small:hover {
+  background-color: #eceef0;
+  border-color: #d0d4d8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Info button */
+.btn-info {
+  background-color: #f8f9fa;
+  color: #2c2c2c;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  padding: 10px 22px;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+}
+
+.btn-info:hover {
+  background-color: #eceef0;
+  color: #2c2c2c;
+  border-color: #d0d4d8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.btn-info:focus,
+.btn-info:active,
+.btn-info:focus:active {
+  background-color: #f8f9fa !important;
+  color: #2c2c2c !important;
+  box-shadow: none;
+  transform: none;
+  outline: none;
+}
+
+/* Warning button */
+.btn-warning {
+  background-color: #f7b449;
+  color: #2c2c2c;
+  border: none;
+  border-radius: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-warning:hover {
+  background-color: #f1b34e;
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1.3px);
+}
+
+/* Danger button */
+.btn-danger {
+  background-color: #f76349;
+  color: #2c2c2c;
+  border: none;
+  border-radius: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+  background-color: #e76149;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1.3px);
+}
+
+.btn-outline-danger {
+  color: #e76149;
+  border-radius: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+  background-color: #e76149;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1.3px);
+}
+
+/* --------------------------------------------------------------------------
+   User Guide Page
+-------------------------------------------------------------------------- */
+
+.guide-container {
+  padding: 2rem;
+  max-width: 900px;
+  margin: auto;
+  padding-top: 85px;
+}
+
+.guide-step {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.guide-step:hover {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.guide-step h3 {
+  font-weight: 600;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #2c2c2c;
+}
+
+.guide-step p,
+.guide-step li {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.guide-step ul {
+  margin-left: 1.2rem;
+}
+
+.back-to-top {
+  text-align: right;
+  margin-top: 2rem;
+}
+
+.faq-container {
+  max-width: 900px;
+  margin: 30px auto;
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 14px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.faq-container h2 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2c2c2c;
+  margin-bottom: 25px;
+}
+
+details {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+summary {
+  font-weight: bold;
+  color: #2c2c2c;
+  font-size: 1.05rem;
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+  padding-right: 20px;
+}
+
+summary::after {
+  content: '+';
+  position: absolute;
+  right: 0;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+details[open] summary::after {
+  content: '−';
+  transform: rotate(180deg);
+}
+
+details p {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #555;
+}
+
+details ol {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #555;
+}
+
+/* --------------------------------------------------------------------------
+   Login \ Register Page
+-------------------------------------------------------------------------- */
+
+.login-register-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  /* Add space below navbar */
+  padding-top: 63px;
+}
+
+.wrapper {
+  width: 420px;
+  background: #f1f1f1;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  color: #2c2c2c;
+  border-radius: 10px;
+  padding: 20px 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper h1 {
+  font-size: 36px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.wrapper .input-box {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  margin: 25px 0;
+}
+
+.input-box input {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 40px;
+  font-size: 16px;
+  color: #2c2c2c;
+  /* Left padding for icon space */
+  padding: 20px 20px 20px 45px;
+}
+
+.input-box input::placeholder {
+  color: #5c5c5c;
+}
+
+.input-box i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: #999;
+}
+
+.wrapper .btn {
+  width: 100%;
+  height: 45px;
+  background: #fff;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 16px;
+  color: #2c2c2c;
+  font-weight: 600;
+}
+
+.wrapper .btn:hover {
+  background: #6c5ce7;
+  color: #fff;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+.wrapper .register-link {
+  font-size: 14.5px;
+  text-align: center;
+  margin: 20px 0 15px;
+}
+
+.register-link p a {
+  color: #2c2c2c;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.register-link p {
+  color: #2c2c2c;
+}
+
+.register-link p a:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   Navbar Properties
+-------------------------------------------------------------------------- */
+
+.nav-modern {
+  background: none;
+  color: #2c2c2c !important;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+  font-weight: 500;
+  position: relative;
+}
+
+.nav-modern:hover {
+  background-color: #f0f0f0;
+}
+
+.nav-modern::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  left: 50%;
+  bottom: 4px;
+  background-color: #dcdcdc;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-modern:hover::after {
+  width: 60%;
+}
+
+/* --------------------------------------------------------------------------
+   Map Properties
+-------------------------------------------------------------------------- */
+
+#map_login_register {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  filter: blur(4px) brightness(0.6);
+}
+
+#map {
+  /* Ensure map credentials are visible */
+  height: calc(100% - 60px);
+  width: 100%;
+}
+
+.leaflet-top.leaflet-left,
+.leaflet-top.leaflet-right {
+  top: 60px !important;
+}
+
+/* --------------------------------------------------------------------------
+   Feed Page
+-------------------------------------------------------------------------- */
+
+.feed-page {
+  overflow-y: auto !important;
+}
+
+/* Search Bar */
+.modern-search-bar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.search-input {
+  border-radius: 30px;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(187, 187, 190, 0.2);
+}
+
+.search-icon-btn {
+  background-color: #08c5c2;
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(108, 92, 231, 0.3);
+}
+
+.search-icon-btn:hover {
+  background-color: #0db6b3;
+  box-shadow: 0 4px 10px rgba(108, 92, 231, 0.4);
+}
+
+/* Updates Table */
+.updates-section {
+  background-color: #e7d1d1;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.updates-section h3 {
+  color: #2c2c2c;
+  font-size: 1.75rem;
+  margin-bottom: 15px;
+}
+
+.updates-section .updates-container {
+  max-height: 620px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.updates-section .custom-card {
+  background-color: #221e1e;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.updates-section .date {
+  font-size: 0.9rem;
+  color: #b5b5b5;
+  margin-bottom: 10px;
+}
+
+.updates-section .review-comment {
+  font-size: 1rem;
+  color: #ccc;
+}
+
+.updates-section .stars {
+  font-size: 1.1rem;
+  color: gold;
+}
+
+.updates-section .profile-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+  transition: transform 0.2s ease;
+}
+
+.updates-section .profile-img:hover {
+  transform: scale(1.1);
+}
+
+.updates-section .profile-icon {
+  font-size: 1.4rem;
+  color: lightgray;
+  margin-right: 10px;
+}
+
+.updates-section .d-flex {
+  align-items: center;
+}
+
+.updates-section .mr-2 {
+  margin-right: 8px;
+}
+
+.updates-section .updates-info {
+  font-size: 0.85rem;
+  color: #b5b5b5;
+}
+
+/* Cliques Cards */
+.cliques-section h3 {
+  margin-bottom: 20px;
+}
+
+.cliques-section .card {
+  background-color: #dcdcdc;
+  border: none;
+  border-radius: 12px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.cliques-section .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.cliques-section .btn {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+}
+
+.cliques-section .invite-btn {
+  margin-right: 10px;
+}
+
+.cliques-section p {
+  text-align: center;
+}
+
+/* Cliques Scoreboard */
+.scoreboard-section {
+  background-color: #dcdcdc;
+  color: #2c2c2c;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.scoreboard-section h3 {
+  font-size: 1.75rem;
+  margin-bottom: 20px;
+}
+
+.scoreboard-section .tooltip-icon {
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: #2c2c2c;
+  transition: color 0.2s ease;
+}
+
+.scoreboard-section .tooltip-icon:hover {
+  color: #2c2c2c;
+}
+
+.scoreboard-card {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  margin-bottom: 25px;
+  padding: 20px;
+}
+
+.scoreboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.scoreboard-section h5 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: #2c2c2c;
+}
+
+/* --------------------------------------------------------------------------
+   Admin Control Room Page
+-------------------------------------------------------------------------- */
+
+/* Clique Activity Charts */
+.btn-chosen {
+  background-color: #6c5ce7;
+  color: #ffffff;
+  border: none;
+  border-radius: 25px;
+  padding: 8px 13px;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(108, 92, 231, 0.2);
+}
+
+.btn-chosen:hover {
+  background-color: #6c5ce7;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-chosen:focus,
+.btn-chosen:active,
+.btn-chosen:focus:active {
+  background-color: #6c5ce7 !important;
+  color: #ffffff !important;
+  box-shadow: none;
+  transform: none;
+  outline: none;
+}
+
+.btn-not-chosen {
+  background-color: #f8f9fa;
+  color: #2c2c2c;
+  border: none;
+  border-radius: 25px;
+  padding: 8px 13px;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(108, 92, 231, 0.2);
+}
+
+.btn-not-chosen:hover {
+  background-color: #6c5ce7;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-not-chosen:focus,
+.btn-not-chosen:active,
+.btn-not-chosen:focus:active {
+  background-color: #6c5ce7 !important;
+  color: #ffffff !important;
+  box-shadow: none;
+  transform: none;
+  outline: none;
+}
+
+/* Members Table*/
+.modern-members-table {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.modern-members-table tbody tr {
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.modern-members-table tbody tr:hover {
+  background-color: #f1f0f0;
+  transform: scale(1.005);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  z-index: 1;
+  position: relative;
+}
+
+.modern-members-table thead {
+  background-color: #dcdcdc;
+  color: #444;
+  font-weight: 600;
+}
+
+.modern-members-table td,
+.modern-members-table th {
+  vertical-align: middle;
+}
+
+.gap-1>*+* {
+  margin-top: 6px;
+}
+
+/* Select Icon Popup */
+.nav-tabs .nav-link {
+  color: #2c2c2c;
+}
+
+/* Unban Button */
+.btn-unban {
+  color: #04aa57;
+  border-radius: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-unban:hover {
+  background-color: #04aa57;
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1.3px);
+}
+
+/* --------------------------------------------------------------------------
+   User Reviews \ Events Map Page
+-------------------------------------------------------------------------- */
+
+#map-content-wrapper {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 30px;
+  padding-top: 90px;
+}
+
+#map-content {
+  width: 90vw;
+  height: 80vh;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+/* --------------------------------------------------------------------------
+   Search Results Page
+-------------------------------------------------------------------------- */
+
+.modern-card {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  padding: 20px;
+  color: #2c2c2c;
+}
+
+.modern-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.modern-card .btn {
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+.modern-card .btn-success {
+  background-color: #04aa57;
+  color: #fff;
+  border: none;
+}
+
+.modern-card .btn-success:hover {
+  background-color: #0b914e;
+}
+
+.modern-card .btn-warning {
+  background-color: #fbc531;
+  color: #000;
+  border: none;
+}
+
+.modern-card .btn-warning:hover {
+  background-color: #e1aa1e;
+}
+
+/* --------------------------------------------------------------------------
+   Map Layer Selection Page
+-------------------------------------------------------------------------- */
+
+.layer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 20px;
+  margin-top: 30px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.layer-btn {
+  width: 100%;
+  background-color: #dcdcdc;
+  color: #2c2c2c;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.layer-btn:hover {
+  background-color: #dcdcdc;
+  transform: translateY(-1px);
+}
+
+.active-layer {
+  background-color: #198754 !important;
+  color: #fff;
+  font-weight: bold;
+  border: 2px solid white;
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.2);
+}
+
+.select-layer-title {
+  color: #2c2c2c;
+  padding-top: 120px;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Manage Account Page
+-------------------------------------------------------------------------- */
+
+.manage_account .container {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 400px;
+}
+
+.manage_account h2 {
+  margin-bottom: 10px;
+  color: #2c2c2c;
+}
+
+.manage_account p.warning {
+  color: #e74c3c;
+  margin-bottom: 30px;
+}
+
+.manage_account .delete-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.manage_account .delete-btn:hover {
+  background-color: #c0392b;
+}
+
+.manage_account .modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.manage_account .modal-content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.manage_account .modal-buttons {
+  margin-top: 20px;
+}
+
+.manage_account .modal-buttons button {
+  padding: 10px 16px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.manage_account .cancel-btn {
+  background-color: #ccc;
+}
+
+.manage_account .cancel-btn:hover {
+  background-color: #b6b4b4;
+}
+
+.manage_account .confirm-delete {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.manage_account .confirm-delete:hover {
+  background-color: #ce493a;
+}
+
+/* --------------------------------------------------------------------------
+   Settings Page
+-------------------------------------------------------------------------- */
+
+.user-info {
+  background-color: #f8f9fa;
+  border-left: 4px solid #6c5ce7;
+}
+
+/* Manage Account Button */
+.btn-manage_account {
+  background-color: #6c5ce7;
+  color: #ffffff;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(108, 92, 231, 0.2);
+}
+
+.btn-manage_account:hover {
+  background-color: #5a4dd1;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+  transform: translateY(-1px);
+}
+
+.edit-photo-overlay {
+  position: absolute;
+  transform: translate(-70%, -50%);
+  left: 50%;
+  top: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  display: none;
+  transition: all 0.3s ease;
+}
+
+button:hover .edit-photo-overlay {
+  display: block;
+}
+
+.avatar-grid {
+  max-width: 100%;
+}
+
+.avatar-item {
+  /* fit about 5 per row responsively */
+  width: 18%;
+  text-align: center;
+}
+
+.avatar-option {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.avatar-option:hover {
+  transform: scale(1.05);
+}
+
+.avatar-selected {
+  transform: scale(1.2);
+  z-index: 1;
+}
+
+/* reviews table */
+#reviews-events-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+#reviews-events-table2 {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.review-stars {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.review-event-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --------------------------------------------------------------------------
+   Change Password Page
+-------------------------------------------------------------------------- */
+
+.change-password-container {
+  max-width: 600px;
+  min-height: 350px;
+  margin: 100px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.change-password-container .card {
+  width: 100%;
+  min-height: 100%;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.alert-area {
+  margin-bottom: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Edit User Page
+-------------------------------------------------------------------------- */
+
+.edit-user-container {
+  max-width: 600px;
+  margin: 100px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  min-height: 445px;
+}
+
+.edit-user-container .card {
+  width: 100%;
+  height: 100%;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  min-height: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Edit Review Page
+-------------------------------------------------------------------------- */
+
+.review-edit-container {
+  color: #2c2c2c;
+  max-width: 600px;
+  max-height: 500px;
+  background-color: #f8f9fa;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.review-edit-container .edit-star {
+  font-size: 30px;
+  cursor: pointer;
+  color: gray;
+  transition: color 0.2s ease;
+}
+
+.review-edit-container .edit-star.gold {
+  color: gold;
+}
+
+.review-edit-container .star-container {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Edit Events Page
+-------------------------------------------------------------------------- */
+
+.edit-event-title {
+  color: #2c2c2c;
+  line-height: 1.6;
+}
+
+
+/* --------------------------------------------------------------------------
+   General
+-------------------------------------------------------------------------- */
+
+a {
+  text-decoration: none;
+  text-align: center;
+}
+
+.box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -150px 0 0 -150px;
+  width: 300px;
+  height: 300px;
+}
+
+.box h1 {
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.container {
+  margin-top: 10rem;
+  text-align: center;
+}
+
+.box p {
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.container {
+  margin-top: 10rem;
+  text-align: center;
+}
+
+.users-table {
+  margin-top: 40px;
+}
+
+input {
+  width: 100%;
+  margin-bottom: 10px;
+  border: none;
+  outline: none;
+  padding: 10px;
+  font-size: 13px;
+  color: #2c2c2c;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  box-shadow:
+    inset 0 -5px 45px rgba(100, 100, 100, 0.2),
+    0 1px 1px rgba(255, 255, 255, 0.2);
+  -webkit-transition: box-shadow 0.5s ease;
+  -moz-transition: box-shadow 0.5s ease;
+  -o-transition: box-shadow 0.5s ease;
+  -ms-transition: box-shadow 0.5s ease;
+  transition: box-shadow 0.5s ease;
+}
+
+input:focus {
+  box-shadow:
+    inset 0 -5px 45px rgba(100, 100, 100, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+/* --------------------------------------------------------------------------
+   Maptest Page Additional Properties
+-------------------------------------------------------------------------- */
+
+.add-button {
+  position: fixed;
+  bottom: 30px;
+  right: 20px;
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.7);
+  color: #000000;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1000;
+  transition: background-color 0.2s ease;
+}
+
+.add-button:hover {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.add-button:focus {
+  outline: none;
+}
+
+#filter-button {
+  /* Above the add button */
+  bottom: 100px;
+}
+
+#layer-button {
+  bottom: 170px;
+}
+
+/* Review Popup */
+.star,
+.review-star {
+  font-size: 20px;
+  cursor: pointer;
+  color: gray;
+}
+
+.gold {
+  color: gold;
+}
+
+textarea {
+  width: 100%;
+}
+
+/* Popup Features */
+.review-editable {
+  width: 100%;
+  max-height: 60px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  box-sizing: border-box;
+  background-color: #fff;
+  color: #333;
+  overflow-y: auto;
+}
+
+.review-editable:empty:before {
+  content: attr(placeholder);
+  color: #aaa;
+}
+
+select.form-control {
+  cursor: pointer;
+}
+
+/* Other */
+
+#clique-filter-box {
+  position: fixed;
+  bottom: 150px;
+  right: 20px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  width: 220px;
+  display: none;
+  max-height: none;
+  opacity: 1;
+  z-index: 1100;
+  overflow: hidden;
+  max-height: 400px;
+}
+
+#clique-filter-box.show {
+  display: block;
+}
+
+#clique-filter-box.open {
+  right: 20px;
+}
+
+#clique-filter-box h4 {
+  margin-top: 0;
+  font-size: 16px;
+  text-align: center;
+}
+
+.filter-item {
+  margin: 5px 0;
+}
+
+.clique-filter-inner {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+#clique-filter-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  /* Cap the scroll area height */
+  max-height: 300px;
+}
+
+#clique-filter-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+#clique-filter-list::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+#clique-filter-list::-webkit-scrollbar-thumb {
+  background-color: #dcdcdc;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+#clique-filter-list::-webkit-scrollbar-thumb:hover {
+  background-color: #d5d2ec;
+  cursor: pointer;
+  /* Only works when scrollbar is a custom element */
+}
+
+.filter-controls {
+  text-align: center;
+  margin-top: auto;
+  padding-top: 10px;
+  background: white;
+}
+
+.filter-controls button {
+  margin: 0 5px;
+}
+
+.filter-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 5px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.filter-label:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-1.5px);
+}
+
+.clique-name {
+  font-weight: bold;
+  color: #333;
+}
+
+/* Hide default checkbox */
+.clique-checkbox {
+  display: none;
+}
+
+/* Show checkmark only when checkbox is checked */
+.custom-checkmark {
+  font-size: 14px;
+  color: green;
+  display: none;
+}
+
+.clique-checkbox:checked+.custom-checkmark {
+  display: inline;
+}
+
+.btn[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.notification-icon {
+  color: black;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.notification-icon:hover {
+  color: #555;
+  transform: scale(1.2);
+}
+
+#notifications-dropdown {
+  position: relative;
+}
+
+.notifications-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  min-width: 300px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  display: none;
+  z-index: 1000;
+}
+
+.scrollable-notifications {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+  font-size: 14px;
+  color: black;
+}
+
+.notification-actions {
+  margin-top: 5px;
+}
+
+.notification-actions button {
+  margin-right: 5px;
+}
+
+.notification-icon span {
+  font-size: 18px;
+  color: black !important;
+  /* force black */
+  transition: color 0.2s ease;
+}
+
+.notification-icon:hover span {
+  color: #555 !important;
+}
+
+#layer-button {
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+#layer-button:hover {
+  text-decoration: none !important;
+  color: inherit !important;
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+#notificationBell {
+  transition: color 0.6s ease-in-out;
+}
+
+.marker-pin {
+  width: 40px;
+  height: 40px;
+  border-radius: 50% 50% 50% 0;
+  background: #c30b82;
+  position: relative;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-pin::after {
+  content: '';
+  width: 80%;
+  height: 80%;
+  background: #fff;
+  position: absolute;
+  border-radius: 50%;
+}
+
+.custom-div-icon i {
+  font-size: 1.5em;
+  position: relative;
+  z-index: 2;
+  transform: rotate(45deg);
+}
+
+.custom-div-icon-event i {
+  font-size: 1.5em;
+  position: relative;
+  z-index: 2;
+  transform: rotate(45deg);
+  color: #0a0ef8;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: rotate(45deg) scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: rotate(45deg) scale(1.2);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: rotate(45deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Icon Grid Component for the Clique Creation Page
+-------------------------------------------------------------------------- */
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 10px;
+  padding: 5px;
+  justify-content: center;
+}
+
+.icon-grid i {
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.icon-grid i:hover {
+  background-color: #f0f0f0;
+}
+
+.card-light-text p {
+  color: white !important;
+}
+
+/* --------------------------------------------------------------------------
+   Add Event Page
+-------------------------------------------------------------------------- */
+
+.add-event input,
+.add-event textarea {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-shadow: none !important;
+}
+
+.add-event input[type='text'].flatpickr-input {
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  padding: 10px;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: none !important;
+  outline: none;
+}
+
+.add-event .form-group {
+  margin-bottom: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Edit Clique Page (Master)
+-------------------------------------------------------------------------- */
+
+.clique-edit-page .scroll-box {
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #1e1e2f;
+  color: #f0f0f0;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 10px 15px;
+}
+
+.clique-edit-page .scroll-box ul {
+  padding-left: 0;
+  list-style: none;
+  margin-bottom: 0;
+}
+
+.clique-edit-page .scroll-box li {
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.clique-edit-page .admin-user {
+  color: #aaa;
+  font-weight: bold;
+}
+
+/* --------------------------------------------------------------------------
+   Cliques Page (Master)
+-------------------------------------------------------------------------- */
+
+.cliques-master .scroll-list {
+  max-height: 100px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Clique Map Page (Master)
+-------------------------------------------------------------------------- */
+
+#map-wrapper-master {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 70px;
+}
+
+#map-master {
+  width: 90vw;
+  height: 80vh;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
