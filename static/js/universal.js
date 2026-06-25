@@ -39,6 +39,7 @@ if (document.getElementById('map') && !window.disableUniversalMap) {
   }).addTo(map);
 
   let allGeoJsonLayer = null;
+  let cachedGeoJsonData = null;
 
   function getStarDisplay(avg) {
     let fullStars = Math.round(avg);
@@ -124,199 +125,206 @@ if (document.getElementById('map') && !window.disableUniversalMap) {
 
   function loadMarkers() {
     fetch('/geojson-features')
-      .then((response) => response.json())
-      .then((data) => {
-        if (allGeoJsonLayer && map.hasLayer(allGeoJsonLayer)) {
-          map.removeLayer(allGeoJsonLayer);
+      .then(response => response.json())
+      .then(data => {
+        cachedGeoJsonData = data; 
+        renderFilteredMarkers();  
+      });
+  }
+
+  function renderFilteredMarkers() {
+    if (!cachedGeoJsonData) return;
+
+    if (allGeoJsonLayer && map.hasLayer(allGeoJsonLayer)) {
+      map.removeLayer(allGeoJsonLayer);
+    }
+
+    const selectedCliqueIds = getSelectedCliqueIds();
+
+    allGeoJsonLayer = L.geoJSON(cachedGeoJsonData, {
+      filter: (feature) => selectedCliqueIds.includes(feature.properties.clique_id),
+      pointToLayer: function (feature, latlng) {
+        const desc = feature.properties.description;
+        const cliqueName = feature.properties.clique_name;
+        const markerId = feature.properties.marker_id;
+        const avg = feature.properties.average_review.toFixed(1);
+        const total = feature.properties.total_reviews;
+        const userReview = feature.properties.user_review;
+        const otherReviews = feature.properties.reviews;
+        const userEvents = feature.properties.user_events;
+        const otherEvents = feature.properties.events;
+        const stars = getStarDisplay(avg);
+        const color = feature.properties.clique_color;
+        const markerIcon = feature.properties.icon;
+        const cliqueId = feature.properties.clique_id;
+
+        let popupContent = `
+          <div style="font-family: 'Poppins', sans-serif;">
+            <strong>${desc} <span style="color: gray; font-weight: normal;">(${cliqueName})</span></strong><br>
+            <div style="margin: 5px 0;">⚖️ Average Rating: ${stars} (${avg} / 5 from ${total} reviews)</div>
+        `;
+
+        if (userReview) {
+          const userStars = getStarDisplay(userReview.stars);
+          const userComment = userReview.commentary ? `"${truncateText(userReview.commentary, 40)}"` : '';
+          popupContent += `
+            <hr>
+            <div style="color: gray;">
+              <strong>Your Review:</strong><br>
+              Stars: ${userStars}<br>
+              ${userComment}
+            </div>
+            <a href="/edit-review/${markerId}">
+              <button class="btn btn-info-small" style="margin-top:5px;">Edit Review</button>
+            </a>
+          `;
+        } else {
+          popupContent += `
+            <label>Leave a review:</label><br>
+            <div class="rating-stars" data-marker="${markerId}" data-selected="0" style="padding-bottom: 5px">
+              ${[1, 2, 3, 4, 5].map((i) => `<span class="review-star" data-value="${i}">&#9733;</span>`).join('')}
+            </div>
+            <div id="review-comment-${markerId}" class="review-editable" contenteditable="true"
+                oninput="limitReviewText(this, ${markerId})"
+                placeholder="Your review (optional)"
+                style="border: 1px solid #ccc; padding: 6px; min-height: 60px;"></div>
+            <div id="charCount-${markerId}" style="font-size: 0.85em; color: grey;">500 characters remaining</div>
+            <br>
+            <button onclick="submitReview(${markerId})" class="btn btn-primary" style="padding: 4px 10px; font-size: 14px;">
+              Submit Review
+            </button>
+          `;
         }
 
-        const selectedCliqueIds = getSelectedCliqueIds();
-
-        allGeoJsonLayer = L.geoJSON(data, {
-          filter: (feature) => selectedCliqueIds.includes(feature.properties.clique_id),
-          pointToLayer: function (feature, latlng) {
-            const desc = feature.properties.description;
-            const cliqueName = feature.properties.clique_name;
-            const markerId = feature.properties.marker_id;
-            const avg = feature.properties.average_review.toFixed(1);
-            const total = feature.properties.total_reviews;
-            const userReview = feature.properties.user_review;
-            const otherReviews = feature.properties.reviews;
-            const userEvents = feature.properties.user_events;
-            const otherEvents = feature.properties.events;
-            const stars = getStarDisplay(avg);
-            const color = feature.properties.clique_color;
-            const markerIcon = feature.properties.icon;
-            const cliqueId = feature.properties.clique_id;
-
-            let popupContent = `
-              <div style="font-family: 'Poppins', sans-serif;">
-                <strong>${desc} <span style="color: gray; font-weight: normal;">(${cliqueName})</span></strong><br>
-                <div style="margin: 5px 0;">⚖️ Average Rating: ${stars} (${avg} / 5 from ${total} reviews)</div>
-            `;
-
-            if (userReview) {
-              const userStars = getStarDisplay(userReview.stars);
-              const userComment = userReview.commentary ? `"${truncateText(userReview.commentary, 40)}"` : '';
-              popupContent += `
-                <hr>
-                <div style="color: gray;">
-                  <strong>Your Review:</strong><br>
-                  Stars: ${userStars}<br>
-                  ${userComment}
+        if (otherReviews.length > 0) {
+          popupContent += `
+            <hr>
+            <div><strong>📝 Other Reviews:</strong></div><div style="max-height: 140px; overflow-y: auto;">
+              <ul style="padding-left: 18px; margin-top:5px;">
+          `;
+          otherReviews.forEach((r) => {
+            popupContent += `
+              <li style="display: flex; align-items: flex-start; padding-top: 8px; word-break: break-word;">
+              ${
+                r.user_pic !== 'default.jpg'
+                  ? `<img src="/static/assets/avatars_profile_pics/${r.user_pic}"
+                          alt="User"
+                          style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 10px;">`
+                  : `<i class="bi bi-person-circle"
+                          style="font-size: 2rem; color: #888; margin-right: 10px;"></i>`
+              }
+                <div>
+                  ${getStarDisplay(r.stars)}
+                  ${r.commentary ? `"${r.commentary}"` : ''}
+                  <em>(${r.user})</em>
                 </div>
-                <a href="/edit-review/${markerId}">
-                  <button class="btn btn-info-small" style="margin-top:5px;">Edit Review</button>
-                </a>
-              `;
-            } else {
-              popupContent += `
-                <label>Leave a review:</label><br>
-                <div class="rating-stars" data-marker="${markerId}" data-selected="0" style="padding-bottom: 5px">
-                  ${[1, 2, 3, 4, 5].map((i) => `<span class="review-star" data-value="${i}">&#9733;</span>`).join('')}
-                </div>
-                <div id="review-comment-${markerId}" class="review-editable" contenteditable="true"
-                    oninput="limitReviewText(this, ${markerId})"
-                    placeholder="Your review (optional)"
-                    style="border: 1px solid #ccc; padding: 6px; min-height: 60px;"></div>
-                <div id="charCount-${markerId}" style="font-size: 0.85em; color: grey;">500 characters remaining</div>
-                <br>
-                <button onclick="submitReview(${markerId})" class="btn btn-primary" style="padding: 4px 10px; font-size: 14px;">
-                  Submit Review
-                </button>
-              `;
-            }
+              </li>`;
+          });
+          popupContent += `
+              </ul>
+            </div>
+          `;
+        }
 
-            if (otherReviews.length > 0) {
-              popupContent += `
-                <hr>
-                <div><strong>📝 Other Reviews:</strong></div><div style="max-height: 140px; overflow-y: auto;">
-                  <ul style="padding-left: 18px; margin-top:5px;">
-              `;
-              otherReviews.forEach((r) => {
-                popupContent += `
-                  <li style="display: flex; align-items: flex-start; padding-top: 8px; word-break: break-word;">
-                  ${
-                    r.user_pic !== 'default.jpg'
-                      ? `<img src="/static/assets/avatars_profile_pics/${r.user_pic}"
-                              alt="User"
-                              style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 10px;">`
-                      : `<i class="bi bi-person-circle"
-                             style="font-size: 2rem; color: #888; margin-right: 10px;"></i>`
-                  }
-                    <div>
-                      ${getStarDisplay(r.stars)}
-                      ${r.commentary ? `"${r.commentary}"` : ''}
-                      <em>(${r.user})</em>
-                    </div>
-                  </li>`;
-              });
-              popupContent += `
-                  </ul>
-                </div>
-              `;
-            }
+        // check if any event is between today and 3 days from now (inclusive)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const endDate = new Date(today);
+        endDate.setDate(today.getDate() + 3);
+        const allEvents = userEvents.concat(otherEvents);
 
-            // check if any event is between today and 3 days from now (inclusive)
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const endDate = new Date(today);
-            endDate.setDate(today.getDate() + 3);
-            const allEvents = userEvents.concat(otherEvents);
+        // Parse from "YYYY-MM-DD" format to Date object
+        function parseDate(dateStr) {
+          const [year, month, day] = dateStr.split('-').map(Number);
+          return new Date(year, month - 1, day); // Month is 0-indexed
+        }
 
-            // Parse from "YYYY-MM-DD" format to Date object
-            function parseDate(dateStr) {
-              const [year, month, day] = dateStr.split('-').map(Number);
-              return new Date(year, month - 1, day); // Month is 0-indexed
-            }
+        const hasEventInRange = allEvents.some((ev) => {
+          const eventDate = parseDate(ev.date);
+          return eventDate >= today && eventDate <= endDate;
+        });
 
-            const hasEventInRange = allEvents.some((ev) => {
-              const eventDate = parseDate(ev.date);
-              return eventDate >= today && eventDate <= endDate;
-            });
+        const allEventsSorted = userEvents
+          .concat(otherEvents)
+          .map((e) => ({
+            ...e,
+            dateObj: new Date(e.date),
+          }))
+          .sort((a, b) => a.dateObj - b.dateObj);
 
-            const allEventsSorted = userEvents
-              .concat(otherEvents)
-              .map((e) => ({
-                ...e,
-                dateObj: new Date(e.date),
-              }))
-              .sort((a, b) => a.dateObj - b.dateObj);
+        if (allEventsSorted.length > 0) {
+          popupContent += `
+            <hr>
+            <div><strong>🗓️ Events:</strong></div><div style="color: blue; max-height: 100px; overflow-y: auto;">
+              <ul style="margin-top: 5px; list-style: none; padding: 0;">
+          `;
 
-            if (allEventsSorted.length > 0) {
-              popupContent += `
-                <hr>
-                <div><strong>🗓️ Events:</strong></div><div style="color: blue; max-height: 100px; overflow-y: auto;">
-                  <ul style="margin-top: 5px; list-style: none; padding: 0;">
-              `;
-
-              allEventsSorted.forEach((e) => {
-                const isOwnEvent = e.is_own_event; // Assume passing a flag for user's own events
-                const eventOwnerText = isOwnEvent ? `<strong>Your</strong> event on` : e.user ? `<strong>${e.user}</strong>'s event on` : 'Event on';
-
-                popupContent += `
-                    <li style="text-align: center; margin-top: 5px; word-break: break-word;">
-                      ${eventOwnerText} <strong>${e.date}</strong> at <strong>${e.time}</strong><br>
-                      ${e.description}
-                    </li>
-                  `;
-              });
-
-              popupContent += `
-                  </ul>
-                </div>
-              `;
-            }
+          allEventsSorted.forEach((e) => {
+            const isOwnEvent = e.is_own_event; // Assume passing a flag for user's own events
+            const eventOwnerText = isOwnEvent ? `<strong>Your</strong> event on` : e.user ? `<strong>${e.user}</strong>'s event on` : 'Event on';
 
             popupContent += `
-              <div style="display: flex; justify-content: center; margin-top: 8px;">
-                <a class="btn btn-info-small" style="margin-right: 8px;" href="/add-event/${markerId}/${cliqueId}">Add Event</a>
-                <a class="btn btn-info-small" href="/edit-events/${markerId}/${cliqueId}">Edit Events</a>
-              </div>
-            `;
+                <li style="text-align: center; margin-top: 5px; word-break: break-word;">
+                  ${eventOwnerText} <strong>${e.date}</strong> at <strong>${e.time}</strong><br>
+                  ${e.description}
+                </li>
+              `;
+          });
 
-            popupContent += `</div>`;
+          popupContent += `
+              </ul>
+            </div>
+          `;
+        }
 
-            const iconSize = 40;
+        popupContent += `
+          <div style="display: flex; justify-content: center; margin-top: 8px;">
+            <a class="btn btn-info-small" style="margin-right: 8px;" href="/add-event/${markerId}/${cliqueId}">Add Event</a>
+            <a class="btn btn-info-small" href="/edit-events/${markerId}/${cliqueId}">Edit Events</a>
+          </div>
+        `;
 
-            if (userEvents == 0 && otherEvents == 0) {
-              // Standard black marker (No events)
-              var customIcon = L.divIcon({
-                className: 'custom-div-icon',
-                html: `<div class='marker-pin' style='background:${color}; width:${iconSize}px; height:${iconSize}px;'>
-                        <i class='bi ${markerIcon}' style='font-size:${iconSize * 0.6}px;'></i>
-                      </div>`,
-                iconSize: [iconSize, iconSize],
-                iconAnchor: [iconSize / 2, iconSize],
-              });
-            } else if (hasEventInRange) {
-              // Pulsing blue marker (Event occurring within 3 days)
-              var customIcon = L.divIcon({
-                className: 'custom-div-icon-event',
-                html: `<div class='marker-pin' style='background:${color}; width:${iconSize}px; height:${iconSize}px;'>
-                        <i class='bi ${markerIcon}' style='font-size:${iconSize * 0.6}px;'></i>
-                      </div>`,
-                iconSize: [iconSize, iconSize],
-                iconAnchor: [iconSize / 2, iconSize],
-              });
-            } else {
-              var customIcon = L.divIcon({
-                // Static blue marker (Future events beyond 3 days)
-                className: 'custom-div-icon',
-                html: `<div class='marker-pin' style='color: #0a0ef8; background:${color}; width:${iconSize}px; height:${iconSize}px;'>
-                        <i class='bi ${markerIcon}' style='font-size:${iconSize * 0.6}px;'></i>
-                      </div>`,
-                iconSize: [iconSize, iconSize],
-                iconAnchor: [iconSize / 2, iconSize],
-              });
-            }
+        popupContent += `</div>`;
 
-            const marker = L.marker(latlng, { icon: customIcon }).bindPopup(popupContent);
-            marker.on('popupopen', () => initReviewStars(markerId));
-            return marker;
-          },
-        }).addTo(map);
-      });
+        const iconSize = 40;
+
+        if (userEvents == 0 && otherEvents == 0) {
+          // Standard black marker (No events)
+          var customIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: `<div class='marker-pin' style='background:${color}; width:${iconSize}px; height:${iconSize}px;'>
+                    <i class='bi ${markerIcon}' style='font-size:${iconSize * 0.6}px;'></i>
+                  </div>`,
+            iconSize: [iconSize, iconSize],
+            iconAnchor: [iconSize / 2, iconSize],
+          });
+        } else if (hasEventInRange) {
+          // Pulsing blue marker (Event occurring within 3 days)
+          var customIcon = L.divIcon({
+            className: 'custom-div-icon-event',
+            html: `<div class='marker-pin' style='background:${color}; width:${iconSize}px; height:${iconSize}px;'>
+                    <i class='bi ${markerIcon}' style='font-size:${iconSize * 0.6}px;'></i>
+                  </div>`,
+            iconSize: [iconSize, iconSize],
+            iconAnchor: [iconSize / 2, iconSize],
+          });
+        } else {
+          var customIcon = L.divIcon({
+            // Static blue marker (Future events beyond 3 days)
+            className: 'custom-div-icon',
+            html: `<div class='marker-pin' style='color: #0a0ef8; background:${color}; width:${iconSize}px; height:${iconSize}px;'>
+                    <i class='bi ${markerIcon}' style='font-size:${iconSize * 0.6}px;'></i>
+                  </div>`,
+            iconSize: [iconSize, iconSize],
+            iconAnchor: [iconSize / 2, iconSize],
+          });
+        }
+
+        const marker = L.marker(latlng, { icon: customIcon }).bindPopup(popupContent);
+        marker.on('popupopen', () => initReviewStars(markerId));
+        return marker;
+      },
+    }).addTo(map);
   }
 
   function getSelectedCliqueIds() {
@@ -489,7 +497,7 @@ if (document.getElementById('map') && !window.disableUniversalMap) {
 
       cb.addEventListener('change', () => {
         localStorage.setItem(`clique-${cb.value}`, cb.checked);
-        loadMarkers();
+        renderFilteredMarkers();
       });
     });
 
@@ -500,7 +508,7 @@ if (document.getElementById('map') && !window.disableUniversalMap) {
           cb.checked = true;
           localStorage.setItem(`clique-${cb.value}`, 'true');
         });
-        loadMarkers();
+        renderFilteredMarkers();
       });
     }
 
@@ -511,7 +519,7 @@ if (document.getElementById('map') && !window.disableUniversalMap) {
           cb.checked = false;
           localStorage.setItem(`clique-${cb.value}`, 'false');
         });
-        loadMarkers();
+        renderFilteredMarkers();
       });
     }
 
