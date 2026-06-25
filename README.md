@@ -50,6 +50,7 @@ geocliques/
 This repository serves as a stable, functional baseline. Updates are pushed iteratively as new architectural patterns are evaluated.
 
 **Active areas of exploration:**
+* **Query Optimization:** Refactoring ORM queries to resolve N+1 performance bottlenecks and improve data retrieval speeds.
 * **AI Integration:** Integrating AI capabilities for intelligent platform features.
 * **Database Scaling:** Migrating infrastructure from SQLite to PostgreSQL.
 * **Map Infrastructure:** Transitioning to keyless, open-source map tile providers.
