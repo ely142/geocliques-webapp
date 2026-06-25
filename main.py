@@ -1866,5 +1866,6 @@ def delete_clique_route(clique_id):
 
 if __name__ == "__main__":
     with app.app_context():
+        os.makedirs(app.instance_path, exist_ok=True)
         db.create_all()
     app.run()
