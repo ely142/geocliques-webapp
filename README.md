@@ -98,7 +98,6 @@ flask run
 ```
 The application will now be running on http://127.0.0.1:5000.
 
-
 ## 📂 Folder Structure
 
 ```
@@ -126,7 +125,15 @@ geocliques-webapp/
 └── README.md            # Project documentation
 ```
 
-## 🚧 Roadmap & Architectural Exploration
+## ⚙️ Architecture & Technical Decisions
+
+* **Internal Developer Tooling:** A protected administrative dashboard was implemented to decouple internal platform operations from the user-facing web app, providing developers with a secure GUI for data management and content moderation without requiring direct database access.
+
+* **Client-Side State Management:** Map marker filtering by clique is handled natively on the frontend via Leaflet's `L.geoJSON`. By transferring the full data payload to the browser, redundant database queries are eliminated, resulting in instantaneous UI updates via local DOM manipulation.
+
+* **Explicit Database Associations:** Complex ternary relationships (e.g., User, Marker, Clique) are managed via a normalized SQLAlchemy schema using explicit association models. This allows contextual metadata to be stored directly on the join models, enabling highly efficient querying while eliminating complex multi-table joins.
+
+## 🚧 Development Roadmap
 This repository serves as a stable, functional baseline. Updates are pushed iteratively as new architectural patterns are evaluated.
 
 **Active areas of exploration:**
