@@ -4,10 +4,11 @@ from datetime import date, datetime, timedelta
 
 from dotenv import load_dotenv
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
-from flask_login import LoginManager, current_user, login_required, login_user, logout_user
+from flask_login import current_user, login_required, login_user, logout_user
 from rapidfuzz import fuzz
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from app.extensions import db, login_manager
 from app.models import (
     BannedUser,
     Clique,
@@ -18,7 +19,6 @@ from app.models import (
     Review,
     User,
     UserMarker,
-    db,
 )
 from app.utils import (
     assign_clique_colors,
@@ -36,19 +36,10 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "fallback-secret")
-
-# Database configuration
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///users.db")
+
 db.init_app(app)
-
-# Flask-Login setup
-login_manager = LoginManager()
 login_manager.init_app(app)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return db.get_or_404(User, user_id)
 
 
 @app.before_request

@@ -4,6 +4,7 @@ import re
 import numpy as np
 from matplotlib.colors import to_rgb
 
+from app.extensions import db
 from app.models import (
     BannedUser,
     Clique,
@@ -14,7 +15,6 @@ from app.models import (
     Review,
     User,
     UserMarker,
-    db,
 )
 
 PALETTE = [
