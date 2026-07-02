@@ -2,13 +2,12 @@ import os
 from collections import Counter
 from datetime import date, datetime, timedelta
 
-from dotenv import load_dotenv
-from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from rapidfuzz import fuzz
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from app.extensions import db, login_manager
+from app.extensions import db
 from app.models import (
     BannedUser,
     Clique,
@@ -32,17 +31,10 @@ from app.utils import (
     perform_leave_clique,
 )
 
-load_dotenv()
-
-app = Flask(__name__)
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "fallback-secret")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///users.db")
-
-db.init_app(app)
-login_manager.init_app(app)
+main_bp = Blueprint("main", __name__)
 
 
-@app.before_request
+@main_bp.before_request
 def delete_expired_events():
     # Allowed endpoints represent views where users interact with map data
     if request.endpoint in ["maptest", "add_event", "get_user_markers", "edit_event"]:
@@ -56,7 +48,7 @@ def delete_expired_events():
         db.session.commit()
 
 
-@app.route("/map_keys.js")
+@main_bp.route("/map_keys.js")
 def map_keys():
     key = os.getenv("MAP_THUNDERFOREST_KEY", "")
     return (
@@ -70,7 +62,7 @@ def map_keys():
 """ functions relating to displaying and interacting with the Leaflet map"""
 
 
-@app.route("/maptest")
+@main_bp.route("/maptest")
 @login_required
 def maptest():
     if current_user.email == "adminadmin@gmail.com":
@@ -79,7 +71,7 @@ def maptest():
     return render_template("user/maptest.html", name=current_user.name, logged_in=True, selected_layer=selected_layer)
 
 
-@app.route("/geojson-features", methods=["GET"])
+@main_bp.route("/geojson-features", methods=["GET"])
 @login_required
 def get_user_markers():
     # Extract current user markers and setup colors
@@ -154,7 +146,7 @@ def get_user_markers():
     return jsonify(features)
 
 
-@app.route("/clique-geojson/<int:clique_id>", methods=["GET"])
+@main_bp.route("/clique-geojson/<int:clique_id>", methods=["GET"])
 @login_required
 def get_clique_markers(clique_id):
     if current_user.email != "adminadmin@gmail.com":
@@ -203,7 +195,7 @@ def get_clique_markers(clique_id):
     return jsonify(features)
 
 
-@app.route("/add-marker", methods=["POST"])
+@main_bp.route("/add-marker", methods=["POST"])
 @login_required
 def add_marker():
     try:
@@ -261,7 +253,7 @@ def add_marker():
         return jsonify({"success": False, "message": str(e)}), 500
 
 
-@app.route("/edit-review/<int:marker_id>", methods=["GET"])
+@main_bp.route("/edit-review/<int:marker_id>", methods=["GET"])
 @login_required
 def edit_review(marker_id):
     review = Review.query.filter_by(marker_id=marker_id, user_id=current_user.id).first_or_404()
@@ -279,7 +271,7 @@ def edit_review(marker_id):
     )
 
 
-@app.route("/update-review/<int:marker_id>", methods=["POST"])
+@main_bp.route("/update-review/<int:marker_id>", methods=["POST"])
 @login_required
 def update_review(marker_id):
     review = Review.query.filter_by(marker_id=marker_id, user_id=current_user.id).first_or_404()
@@ -305,7 +297,7 @@ def update_review(marker_id):
     return redirect(url_for(next))
 
 
-@app.route("/rate-marker/<int:marker_id>", methods=["POST"])
+@main_bp.route("/rate-marker/<int:marker_id>", methods=["POST"])
 @login_required
 def rate_marker(marker_id):
     marker = Marker.query.get_or_404(marker_id)
@@ -337,7 +329,7 @@ def rate_marker(marker_id):
     return jsonify({"success": True, "message": "Review added!"})
 
 
-@app.route("/select-layer", methods=["GET", "POST"])
+@main_bp.route("/select-layer", methods=["GET", "POST"])
 @login_required
 def select_layer():
     if request.method == "POST":
@@ -365,7 +357,7 @@ def select_layer():
     )
 
 
-@app.route("/add-event/<int:marker_id>/<int:clique_id>", methods=["GET", "POST"])
+@main_bp.route("/add-event/<int:marker_id>/<int:clique_id>", methods=["GET", "POST"])
 @login_required
 def add_event(marker_id, clique_id):
     if request.method == "POST":
@@ -398,7 +390,7 @@ def add_event(marker_id, clique_id):
     )
 
 
-@app.route("/edit-events/<int:marker_id>/<int:clique_id>", methods=["GET"])
+@main_bp.route("/edit-events/<int:marker_id>/<int:clique_id>", methods=["GET"])
 @login_required
 def edit_event(marker_id, clique_id):
     all_user_events = Event.query.filter(Event.marker_id == marker_id, Event.user_id == current_user.id, Event.clique_id == clique_id).all()
@@ -414,7 +406,7 @@ def edit_event(marker_id, clique_id):
     )
 
 
-@app.route("/update-event/<int:event_id>", methods=["POST"])
+@main_bp.route("/update-event/<int:event_id>", methods=["POST"])
 @login_required
 def update_event(event_id):
     event = Event.query.get_or_404(event_id)
@@ -451,7 +443,7 @@ def update_event(event_id):
                 return redirect(url_for("edit_event", marker_id=event.marker_id, clique_id=event.clique_id))
 
 
-@app.route("/update-icon/<int:clique_id>", methods=["POST"])
+@main_bp.route("/update-icon/<int:clique_id>", methods=["POST"])
 @login_required
 def update_icon(clique_id):
     clique = Clique.query.get_or_404(clique_id)
@@ -466,7 +458,7 @@ def update_icon(clique_id):
     return redirect(url_for("admin_control_room", clique_id=clique_id))
 
 
-@app.route("/update_clique_type/<int:clique_id>", methods=["POST"])
+@main_bp.route("/update_clique_type/<int:clique_id>", methods=["POST"])
 @login_required
 def update_clique_type(clique_id):
     clique = Clique.query.get_or_404(clique_id)
@@ -487,17 +479,17 @@ def update_clique_type(clique_id):
 """ functions relating to registration, login, account, and user-specific actions"""
 
 
-@app.route("/")
+@main_bp.route("/")
 def home():
     return render_template("index.html", logged_in=current_user.is_authenticated, show_auth_links=True)
 
 
-@app.route("/user_guide", methods=["GET"])
+@main_bp.route("/user_guide", methods=["GET"])
 def user_guide():
     return render_template("user_guide.html", logged_in=False)
 
 
-@app.route("/register", methods=["GET", "POST"])
+@main_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         email = request.form.get("email")
@@ -537,7 +529,7 @@ def register():
     return render_template("register.html", logged_in=current_user.is_authenticated)
 
 
-@app.route("/login", methods=["GET", "POST"])
+@main_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form.get("email")
@@ -560,7 +552,7 @@ def login():
     return render_template("login.html", logged_in=current_user.is_authenticated)
 
 
-@app.route("/logout")
+@main_bp.route("/logout")
 @login_required
 def logout():
     db.session.close()
@@ -568,7 +560,7 @@ def logout():
     return redirect(url_for("home"))
 
 
-@app.route("/settings")
+@main_bp.route("/settings")
 @login_required
 def settings():
     user_clique_links = CliqueUser.query.filter_by(user_id=current_user.id).all()
@@ -642,7 +634,7 @@ def settings():
     )
 
 
-@app.route("/delete-review/<int:review_id>", methods=["POST"])
+@main_bp.route("/delete-review/<int:review_id>", methods=["POST"])
 @login_required
 def delete_review_route(review_id):
     review = db.session.get(Review, review_id)
@@ -654,7 +646,7 @@ def delete_review_route(review_id):
     return redirect(url_for("settings"))
 
 
-@app.route("/check_review_solo/<int:review_id>")
+@main_bp.route("/check_review_solo/<int:review_id>")
 @login_required
 def check_review_solo(review_id):
     review = Review.query.get_or_404(review_id)
@@ -662,13 +654,13 @@ def check_review_solo(review_id):
     return jsonify({"is_only": len(marker.reviews) == 1})
 
 
-@app.route("/user_edit_user", methods=["GET"])
+@main_bp.route("/user_edit_user", methods=["GET"])
 @login_required
 def user_edit_user():
     return render_template("user/user_edit_user.html", name=current_user.name, logged_in=True)
 
 
-@app.route("/update_user", methods=["POST"])
+@main_bp.route("/update_user", methods=["POST"])
 @login_required
 def update_user():
     new_name = request.form.get("name")
@@ -697,13 +689,13 @@ def update_user():
     return redirect(url_for("settings"))
 
 
-@app.route("/change_password", methods=["GET"])
+@main_bp.route("/change_password", methods=["GET"])
 @login_required
 def change_password():
     return render_template("user/change_password.html", name=current_user.name, logged_in=True)
 
 
-@app.route("/update_password", methods=["POST"])
+@main_bp.route("/update_password", methods=["POST"])
 @login_required
 def update_password():
     current_password = request.form.get("current_password")
@@ -735,7 +727,7 @@ def update_password():
     return redirect(url_for("settings"))
 
 
-@app.route("/manage_account", methods=["GET"])
+@main_bp.route("/manage_account", methods=["GET"])
 @login_required
 def manage_account():
     return render_template(
@@ -746,7 +738,7 @@ def manage_account():
     )
 
 
-@app.route("/verify-password", methods=["POST"])
+@main_bp.route("/verify-password", methods=["POST"])
 @login_required
 def verify_password():
     data = request.get_json()
@@ -758,7 +750,7 @@ def verify_password():
         return jsonify(valid=False)
 
 
-@app.route("/update-profile-pic/<int:user_id>", methods=["POST"])
+@main_bp.route("/update-profile-pic/<int:user_id>", methods=["POST"])
 @login_required
 def update_profile_pic(user_id):
     user = User.query.get_or_404(user_id)
@@ -783,7 +775,7 @@ def update_profile_pic(user_id):
 """ functions relating to creating, searching, joining, and leaving cliques"""
 
 
-@app.route("/feed")
+@main_bp.route("/feed")
 @login_required
 def feed():
     user_clique_links = CliqueUser.query.filter_by(user_id=current_user.id).all()
@@ -902,7 +894,7 @@ def feed():
     )
 
 
-@app.route("/create-clique", methods=["GET", "POST"])
+@main_bp.route("/create-clique", methods=["GET", "POST"])
 @login_required
 def create_clique():
     if request.method == "POST":
@@ -938,7 +930,7 @@ def create_clique():
     return render_template("user/create_clique.html", name=current_user.name, logged_in=True)
 
 
-@app.route("/send_invite", methods=["POST"])
+@main_bp.route("/send_invite", methods=["POST"])
 @login_required
 def send_invite():
     data = request.get_json()
@@ -1000,7 +992,7 @@ def send_invite():
     return jsonify({"success": True, "message": f"Invitation sent successfully as '{notif_type}'!"})
 
 
-@app.route("/join_clique/<int:clique_id>", methods=["POST"])
+@main_bp.route("/join_clique/<int:clique_id>", methods=["POST"])
 @login_required
 def join_clique(clique_id):
     banned = db.session.query(BannedUser).filter_by(user_id=current_user.id, clique_id=clique_id).first()
@@ -1022,7 +1014,7 @@ def join_clique(clique_id):
     return jsonify({"success": True, "message": "Successfully joined the clique!"})
 
 
-@app.route("/leave_clique/<int:clique_id>", methods=["POST"])
+@main_bp.route("/leave_clique/<int:clique_id>", methods=["POST"])
 @login_required
 def leave_clique(clique_id):
     success = perform_leave_clique(clique_id, current_user.id)
@@ -1034,7 +1026,7 @@ def leave_clique(clique_id):
     return redirect(url_for("settings"))
 
 
-@app.route("/search_cliques")
+@main_bp.route("/search_cliques")
 @login_required
 def search_cliques():
     query = request.args.get("query", "").strip().lower()
@@ -1075,7 +1067,7 @@ def search_cliques():
     )
 
 
-@app.route("/autocomplete")
+@main_bp.route("/autocomplete")
 @login_required
 def autocomplete():
     term = request.args.get("term", "").lower()
@@ -1093,7 +1085,7 @@ def autocomplete():
     return jsonify(list(set(matches))[:10])
 
 
-@app.route("/request_join_protected/<int:clique_id>", methods=["POST"])
+@main_bp.route("/request_join_protected/<int:clique_id>", methods=["POST"])
 @login_required
 def request_join_protected(clique_id):
     if not db.session.get(Clique, clique_id):
@@ -1120,7 +1112,7 @@ def request_join_protected(clique_id):
     return jsonify({"success": True, "message": "Request sent to the clique admin."})
 
 
-@app.route("/get_notifications")
+@main_bp.route("/get_notifications")
 @login_required
 def get_notifications():
     notifications = []
@@ -1218,7 +1210,7 @@ def get_notifications():
     return jsonify({"notifications": notifications})
 
 
-@app.route("/delete_notification/<int:id>", methods=["POST"])
+@main_bp.route("/delete_notification/<int:id>", methods=["POST"])
 @login_required
 def delete_notification(id):
     note = db.session.get(Notification, id)
@@ -1245,7 +1237,7 @@ def delete_notification(id):
 """ functions used by the cliques' admins to manage the cliques"""
 
 
-@app.route("/accept_request/<int:note_id>/<int:clique_id>", methods=["POST"])
+@main_bp.route("/accept_request/<int:note_id>/<int:clique_id>", methods=["POST"])
 @login_required
 def accept_request(note_id, clique_id):
     note = Notification.query.get_or_404(note_id)
@@ -1268,7 +1260,7 @@ def accept_request(note_id, clique_id):
     return jsonify({"success": True, "message": f"{user.name} has been added to '{clique.name}'."})
 
 
-@app.route("/admin_control_room/<int:clique_id>", methods=["GET", "POST"])
+@main_bp.route("/admin_control_room/<int:clique_id>", methods=["GET", "POST"])
 @login_required
 def admin_control_room(clique_id):
     clique = Clique.query.get_or_404(clique_id)
@@ -1400,7 +1392,7 @@ def admin_control_room(clique_id):
     )
 
 
-@app.route("/kick_user/<int:clique_id>/<int:user_id>", methods=["POST"])
+@main_bp.route("/kick_user/<int:clique_id>/<int:user_id>", methods=["POST"])
 @login_required
 def kick_user(clique_id, user_id):
     clique = Clique.query.get_or_404(clique_id)
@@ -1416,7 +1408,7 @@ def kick_user(clique_id, user_id):
     return redirect(url_for("admin_control_room", clique_id=clique_id))
 
 
-@app.route("/ban_user/<int:clique_id>/<int:user_id>", methods=["POST"])
+@main_bp.route("/ban_user/<int:clique_id>/<int:user_id>", methods=["POST"])
 @login_required
 def ban_user(clique_id, user_id):
     reason = request.form.get("reason", "").strip()[:100]
@@ -1442,7 +1434,7 @@ def ban_user(clique_id, user_id):
     return redirect(url_for("admin_control_room", clique_id=clique_id))
 
 
-@app.route("/unban_user/<int:clique_id>/<int:user_id>", methods=["POST"])
+@main_bp.route("/unban_user/<int:clique_id>/<int:user_id>", methods=["POST"])
 @login_required
 def unban_user(clique_id, user_id):
     clique = Clique.query.get_or_404(clique_id)
@@ -1458,7 +1450,7 @@ def unban_user(clique_id, user_id):
     return redirect(url_for("admin_control_room", clique_id=clique_id))
 
 
-@app.route("/transfer_admin/<int:clique_id>/<int:user_id>", methods=["POST"])
+@main_bp.route("/transfer_admin/<int:clique_id>/<int:user_id>", methods=["POST"])
 @login_required
 def transfer_admin(clique_id, user_id):
     if current_user.email != "adminadmin@gmail.com":
@@ -1476,7 +1468,7 @@ def transfer_admin(clique_id, user_id):
     return redirect(url_for("edit_clique", clique_id=clique_id))
 
 
-@app.route("/user-reviews-map/<int:user_id>/<int:clique_id>")
+@main_bp.route("/user-reviews-map/<int:user_id>/<int:clique_id>")
 @login_required
 def user_reviews_map(user_id, clique_id):
     user = User.query.get_or_404(user_id)
@@ -1521,7 +1513,7 @@ def user_reviews_map(user_id, clique_id):
     )
 
 
-@app.route("/user-events-map/<int:user_id>/<int:clique_id>")
+@main_bp.route("/user-events-map/<int:user_id>/<int:clique_id>")
 @login_required
 def user_events_map(user_id, clique_id):
     user = User.query.get_or_404(user_id)
@@ -1573,7 +1565,7 @@ def user_events_map(user_id, clique_id):
     )
 
 
-@app.route("/send_admin_invitation/<int:clique_id>/<int:user_id>", methods=["POST"])
+@main_bp.route("/send_admin_invitation/<int:clique_id>/<int:user_id>", methods=["POST"])
 @login_required
 def send_admin_invitation(clique_id, user_id):
     clique = db.session.get(Clique, clique_id)
@@ -1590,7 +1582,7 @@ def send_admin_invitation(clique_id, user_id):
     return redirect(url_for("admin_control_room", clique_id=clique_id))
 
 
-@app.route("/accept_admin_invite/<int:note_id>/<int:clique_id>", methods=["POST"])
+@main_bp.route("/accept_admin_invite/<int:note_id>/<int:clique_id>", methods=["POST"])
 @login_required
 def accept_admin_invite(note_id, clique_id):
     note = Notification.query.get_or_404(note_id)
@@ -1606,7 +1598,7 @@ def accept_admin_invite(note_id, clique_id):
     return redirect(url_for("maptest"))
 
 
-@app.route("/decline_admin_invite/<int:note_id>", methods=["POST"])
+@main_bp.route("/decline_admin_invite/<int:note_id>", methods=["POST"])
 @login_required
 def decline_admin_invite(note_id):
     note = Notification.query.get_or_404(note_id)
@@ -1618,7 +1610,7 @@ def decline_admin_invite(note_id):
     return redirect(url_for("maptest"))
 
 
-@app.route("/report_user", methods=["POST"])
+@main_bp.route("/report_user", methods=["POST"])
 @login_required
 def report_user():
     user_id = int(request.form.get("user_id"))
@@ -1639,7 +1631,7 @@ def report_user():
 """ functions accessible only to the master user """
 
 
-@app.route("/users")
+@main_bp.route("/users")
 @login_required
 def users():
     if current_user.email != "adminadmin@gmail.com":
@@ -1674,7 +1666,7 @@ def users():
     )
 
 
-@app.route("/unban_user_master/<int:clique_id>/<int:user_id>", methods=["POST"])
+@main_bp.route("/unban_user_master/<int:clique_id>/<int:user_id>", methods=["POST"])
 @login_required
 def unban_user_master(clique_id, user_id):
     if current_user.email != "adminadmin@gmail.com":
@@ -1688,7 +1680,7 @@ def unban_user_master(clique_id, user_id):
     return redirect(url_for("users"))
 
 
-@app.route("/edit_user/<int:user_id>", methods=["POST"])
+@main_bp.route("/edit_user/<int:user_id>", methods=["POST"])
 @login_required
 def edit_user(user_id):
     if current_user.email != "adminadmin@gmail.com":
@@ -1712,7 +1704,7 @@ def edit_user(user_id):
     return jsonify({"success": False, "message": "User not found."})
 
 
-@app.route("/cliques")
+@main_bp.route("/cliques")
 def cliques():
     all_cliques = Clique.query.all()
     admin_map = {clique.id: db.session.get(User, clique.admin_id) for clique in all_cliques}
@@ -1724,7 +1716,7 @@ def cliques():
     )
 
 
-@app.route("/clique-map/<int:clique_id>")
+@main_bp.route("/clique-map/<int:clique_id>")
 @login_required
 def master_clique_map(clique_id):
     if current_user.email != "adminadmin@gmail.com":
@@ -1734,7 +1726,7 @@ def master_clique_map(clique_id):
     return render_template("master/clique_map.html", clique=clique, logged_in=True)
 
 
-@app.route("/edit_clique/<int:clique_id>", methods=["GET"])
+@main_bp.route("/edit_clique/<int:clique_id>", methods=["GET"])
 @login_required
 def edit_clique(clique_id):
     if current_user.email != "adminadmin@gmail.com":
@@ -1773,7 +1765,7 @@ def edit_clique(clique_id):
     )
 
 
-@app.route("/remove_marker_from_clique/<int:clique_id>/<int:marker_id>", methods=["POST"])
+@main_bp.route("/remove_marker_from_clique/<int:clique_id>/<int:marker_id>", methods=["POST"])
 @login_required
 def remove_marker_from_clique(clique_id, marker_id):
     if current_user.email != "adminadmin@gmail.com":
@@ -1783,7 +1775,7 @@ def remove_marker_from_clique(clique_id, marker_id):
     return redirect(url_for("edit_clique", clique_id=clique_id))
 
 
-@app.route("/delete_review_from_clique/<int:review_id>/<int:clique_id>", methods=["POST"])
+@main_bp.route("/delete_review_from_clique/<int:review_id>/<int:clique_id>", methods=["POST"])
 @login_required
 def delete_review_from_clique(review_id, clique_id):
     delete_review_and_update_marker(review_id)
@@ -1791,7 +1783,7 @@ def delete_review_from_clique(review_id, clique_id):
     return redirect(url_for("edit_clique", clique_id=clique_id))
 
 
-@app.route("/master/reports")
+@main_bp.route("/master/reports")
 @login_required
 def master_reports():
     if current_user.email != "adminadmin@gmail.com":
@@ -1817,7 +1809,7 @@ def master_reports():
 """ functions used for deletions"""
 
 
-@app.route("/delete-account", methods=["POST"])
+@main_bp.route("/delete-account", methods=["POST"])
 @login_required
 def delete_account():
     if request.form.get("confirmed") != "true":
@@ -1831,7 +1823,7 @@ def delete_account():
     return redirect(url_for("login"))
 
 
-@app.route("/delete_user/<int:user_id>", methods=["POST"])
+@main_bp.route("/delete_user/<int:user_id>", methods=["POST"])
 @login_required
 def delete_user_route(user_id):
     if current_user.email != "adminadmin@gmail.com":
@@ -1843,7 +1835,7 @@ def delete_user_route(user_id):
     return redirect(url_for("users"))
 
 
-@app.route("/delete_clique/<int:clique_id>", methods=["POST"])
+@main_bp.route("/delete_clique/<int:clique_id>", methods=["POST"])
 @login_required
 def delete_clique_route(clique_id):
     clique = Clique.query.get_or_404(clique_id)
@@ -1853,10 +1845,3 @@ def delete_clique_route(clique_id):
     delete_clique_and_contents(clique_id)
     db.session.commit()
     return redirect(url_for("cliques"))
-
-
-if __name__ == "__main__":
-    with app.app_context():
-        os.makedirs(app.instance_path, exist_ok=True)
-        db.create_all()
-    app.run()
