@@ -57,9 +57,9 @@
                 </div>
               </td>
               <td>
-                <a href="{{ url_for('master_clique_map', clique_id=clique.id) }}" class="btn btn-primary-small mb-2"> Show </a>
-                <a href="{{ url_for('edit_clique', clique_id=clique.id) }}" class="btn btn-secondary mb-2">Edit</a>
-                <form action="{{ url_for('delete_clique_route', clique_id=clique.id) }}" method="POST" onsubmit="return confirmDeleteClique();">
+                <a href="{{ url_for('main.master_clique_map', clique_id=clique.id) }}" class="btn btn-primary-small mb-2"> Show </a>
+                <a href="{{ url_for('main.edit_clique', clique_id=clique.id) }}" class="btn btn-secondary mb-2">Edit</a>
+                <form action="{{ url_for('main.delete_clique_route', clique_id=clique.id) }}" method="POST" onsubmit="return confirmDeleteClique();">
                   <button type="submit" class="btn btn-outline-danger">Delete</button>
                 </form>
               </td>
