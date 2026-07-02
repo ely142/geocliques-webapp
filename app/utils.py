@@ -4,7 +4,7 @@ import re
 import numpy as np
 from matplotlib.colors import to_rgb
 
-from models import (
+from app.models import (
     BannedUser,
     Clique,
     CliqueUser,

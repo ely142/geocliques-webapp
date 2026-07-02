@@ -8,7 +8,7 @@ from flask_login import LoginManager, current_user, login_required, login_user, 
 from rapidfuzz import fuzz
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from models import (
+from app.models import (
     BannedUser,
     Clique,
     CliqueUser,
@@ -20,7 +20,7 @@ from models import (
     UserMarker,
     db,
 )
-from utils import (
+from app.utils import (
     assign_clique_colors,
     delete_clique_and_contents,
     delete_marker_and_contents,

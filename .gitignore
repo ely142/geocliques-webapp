@@ -1,9 +1,10 @@
 venv/
 .env
-static/assets/map_keys.js
+app/static/assets/map_keys.js
 instance/
+app/__pycache__/
 __pycache__/
 *.pyc
-static/assets/avatars_profile_pics/
+app/static/assets/avatars_profile_pics/
 instance/
 .vscode
