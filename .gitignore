@@ -1,11 +1,22 @@
+# Python & Virtual Environment
 venv/
-.env
-app/static/assets/map_keys.js
-instance/
-app/__pycache__/
 __pycache__/
 *.pyc
-app/static/assets/avatars_profile_pics/
+*.pyo
+*.pyd
+
+# Environment Variables & Secrets
+.env
+app/static/assets/map_keys.js
+
+# Flask App & Database
 instance/
-.vscode
+
+# Testing
 .pytest_cache/
+
+# Media
+app/static/assets/avatars_profile_pics/
+
+# IDEs & Editors
+.vscode/
