@@ -300,7 +300,8 @@ def update_review(marker_id):
 @main_bp.route("/rate-marker/<int:marker_id>", methods=["POST"])
 @login_required
 def rate_marker(marker_id):
-    marker = Marker.query.get_or_404(marker_id)
+    marker = db.get_or_404(Marker, marker_id)
+
     data = request.get_json()
     stars = int(data.get("rating"))
     commentary = data.get("commentary", "").strip()
@@ -409,7 +410,7 @@ def edit_event(marker_id, clique_id):
 @main_bp.route("/update-event/<int:event_id>", methods=["POST"])
 @login_required
 def update_event(event_id):
-    event = Event.query.get_or_404(event_id)
+    event = db.get_or_404(Event, event_id)
     action = request.form.get("action")
     next = request.form.get("next")
 
@@ -446,7 +447,7 @@ def update_event(event_id):
 @main_bp.route("/update-icon/<int:clique_id>", methods=["POST"])
 @login_required
 def update_icon(clique_id):
-    clique = Clique.query.get_or_404(clique_id)
+    clique = db.get_or_404(Clique, clique_id)
 
     if request.method == "POST":
         new_icon = request.form.get("selectedIcon")
@@ -461,7 +462,7 @@ def update_icon(clique_id):
 @main_bp.route("/update_clique_type/<int:clique_id>", methods=["POST"])
 @login_required
 def update_clique_type(clique_id):
-    clique = Clique.query.get_or_404(clique_id)
+    clique = db.get_or_404(Clique, clique_id)
 
     if request.method == "POST":
         new_visibility = request.form.get("visibility")
@@ -649,7 +650,7 @@ def delete_review_route(review_id):
 @main_bp.route("/check_review_solo/<int:review_id>")
 @login_required
 def check_review_solo(review_id):
-    review = Review.query.get_or_404(review_id)
+    review = db.get_or_404(Review, review_id)
     marker = review.marker
     return jsonify({"is_only": len(marker.reviews) == 1})
 
@@ -753,7 +754,7 @@ def verify_password():
 @main_bp.route("/update-profile-pic/<int:user_id>", methods=["POST"])
 @login_required
 def update_profile_pic(user_id):
-    user = User.query.get_or_404(user_id)
+    user = db.get_or_404(User, user_id)
     action = request.form.get("action")
 
     if action == "edit":
@@ -961,7 +962,11 @@ def send_invite():
         return jsonify({"success": False, "message": "The user you invited is already in this clique."}), 400
 
     # Determine notification type
-    clique = Clique.query.get_or_404(clique_id)
+    clique = db.session.get(Clique, clique_id)
+
+    if not clique:
+        return jsonify({"success": False, "message": "Clique not found."}), 404
+
     is_admin = clique.admin_id == current_user.id
     is_protected = clique.visibility == "Protected"
     if is_admin and is_protected:
@@ -1240,8 +1245,8 @@ def delete_notification(id):
 @main_bp.route("/accept_request/<int:note_id>/<int:clique_id>", methods=["POST"])
 @login_required
 def accept_request(note_id, clique_id):
-    note = Notification.query.get_or_404(note_id)
-    clique = Clique.query.get_or_404(clique_id)
+    note = db.get_or_404(Notification, note_id)
+    clique = db.get_or_404(Clique, clique_id)
 
     if current_user.id != clique.admin_id:
         return jsonify({"success": False, "message": "Only the admin can accept join requests."}), 403
@@ -1263,7 +1268,7 @@ def accept_request(note_id, clique_id):
 @main_bp.route("/admin_control_room/<int:clique_id>", methods=["GET", "POST"])
 @login_required
 def admin_control_room(clique_id):
-    clique = Clique.query.get_or_404(clique_id)
+    clique = db.get_or_404(Clique, clique_id)
 
     if clique.admin_id != current_user.id:
         return redirect(url_for("main.feed"))
@@ -1395,7 +1400,7 @@ def admin_control_room(clique_id):
 @main_bp.route("/kick_user/<int:clique_id>/<int:user_id>", methods=["POST"])
 @login_required
 def kick_user(clique_id, user_id):
-    clique = Clique.query.get_or_404(clique_id)
+    clique = db.get_or_404(Clique, clique_id)
     if current_user.id != clique.admin_id and current_user.email != "adminadmin@gmail.com":
         return redirect(url_for("main.feed"))
 
@@ -1412,7 +1417,7 @@ def kick_user(clique_id, user_id):
 @login_required
 def ban_user(clique_id, user_id):
     reason = request.form.get("reason", "").strip()[:100]
-    clique = Clique.query.get_or_404(clique_id)
+    clique = db.get_or_404(Clique, clique_id)
 
     if current_user.id != clique.admin_id and current_user.email != "adminadmin@gmail.com":
         return redirect(url_for("main.feed"))
@@ -1437,7 +1442,7 @@ def ban_user(clique_id, user_id):
 @main_bp.route("/unban_user/<int:clique_id>/<int:user_id>", methods=["POST"])
 @login_required
 def unban_user(clique_id, user_id):
-    clique = Clique.query.get_or_404(clique_id)
+    clique = db.get_or_404(Clique, clique_id)
 
     if current_user.id != clique.admin_id:
         return redirect(url_for("main.feed"))
@@ -1456,8 +1461,8 @@ def transfer_admin(clique_id, user_id):
     if current_user.email != "adminadmin@gmail.com":
         return redirect(url_for("main.feed"))
 
-    clique = Clique.query.get_or_404(clique_id)
-    user = User.query.get_or_404(user_id)
+    clique = db.get_or_404(Clique, clique_id)
+    user = db.get_or_404(User, user_id)
 
     if user.id == clique.admin_id:
         return redirect(url_for("main.edit_clique", clique_id=clique_id))
@@ -1471,7 +1476,7 @@ def transfer_admin(clique_id, user_id):
 @main_bp.route("/user-reviews-map/<int:user_id>/<int:clique_id>")
 @login_required
 def user_reviews_map(user_id, clique_id):
-    user = User.query.get_or_404(user_id)
+    user = db.get_or_404(User, user_id)
 
     # Find markers belonging to the clique that the user has already reviewed
     reviewed_marker_ids = db.session.query(Review.marker_id).filter_by(user_id=user_id).all()
@@ -1516,7 +1521,7 @@ def user_reviews_map(user_id, clique_id):
 @main_bp.route("/user-events-map/<int:user_id>/<int:clique_id>")
 @login_required
 def user_events_map(user_id, clique_id):
-    user = User.query.get_or_404(user_id)
+    user = db.get_or_404(User, user_id)
 
     evented_marker_ids = db.session.query(Event.marker_id).filter_by(user_id=user_id).all()
     evented_marker_ids = [mid[0] for mid in evented_marker_ids]
@@ -1585,8 +1590,8 @@ def send_admin_invitation(clique_id, user_id):
 @main_bp.route("/accept_admin_invite/<int:note_id>/<int:clique_id>", methods=["POST"])
 @login_required
 def accept_admin_invite(note_id, clique_id):
-    note = Notification.query.get_or_404(note_id)
-    clique = Clique.query.get_or_404(clique_id)
+    note = db.get_or_404(Notification, note_id)
+    clique = db.get_or_404(Clique, clique_id)
 
     if note.user_id != current_user.id or note.type != "invitation to become admin":
         return redirect(url_for("main.maptest"))
@@ -1601,7 +1606,7 @@ def accept_admin_invite(note_id, clique_id):
 @main_bp.route("/decline_admin_invite/<int:note_id>", methods=["POST"])
 @login_required
 def decline_admin_invite(note_id):
-    note = Notification.query.get_or_404(note_id)
+    note = db.get_or_404(Notification, note_id)
     if note.user_id != current_user.id or note.type != "invitation to become admin":
         return redirect(url_for("main.maptest"))
 
@@ -1722,7 +1727,7 @@ def master_clique_map(clique_id):
     if current_user.email != "adminadmin@gmail.com":
         return redirect(url_for("main.home"))
 
-    clique = Clique.query.get_or_404(clique_id)
+    clique = db.get_or_404(Clique, clique_id)
     return render_template("master/clique_map.html", clique=clique, logged_in=True)
 
 
@@ -1732,7 +1737,7 @@ def edit_clique(clique_id):
     if current_user.email != "adminadmin@gmail.com":
         return redirect(url_for("main.feed"))
 
-    clique = Clique.query.get_or_404(clique_id)
+    clique = db.get_or_404(Clique, clique_id)
     all_users = User.query.all()
 
     member_ids = set(cu.user_id for cu in clique.users)
@@ -1838,7 +1843,7 @@ def delete_user_route(user_id):
 @main_bp.route("/delete_clique/<int:clique_id>", methods=["POST"])
 @login_required
 def delete_clique_route(clique_id):
-    clique = Clique.query.get_or_404(clique_id)
+    clique = db.get_or_404(Clique, clique_id)
     if current_user.id != clique.admin_id and current_user.email != "adminadmin@gmail.com":
         return redirect(url_for("main.settings"))
 
