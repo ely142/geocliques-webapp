@@ -8,3 +8,4 @@ __pycache__/
 app/static/assets/avatars_profile_pics/
 instance/
 .vscode
+.pytest_cache/

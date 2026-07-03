@@ -6,7 +6,7 @@ from flask import Flask
 from app.extensions import db, login_manager
 
 
-def create_app():
+def create_app(test_config=None):
     load_dotenv()
 
     app = Flask(__name__)
@@ -15,6 +15,9 @@ def create_app():
 
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "fallback-secret")
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///users.db")
+
+    if test_config:
+        app.config.update(test_config)
 
     db.init_app(app)
     login_manager.init_app(app)
