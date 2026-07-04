@@ -1,16 +1,10 @@
 from datetime import datetime
 
 from flask_login import UserMixin
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Float, ForeignKey, Integer, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-
-class Base(DeclarativeBase):
-    pass
-
-
-db = SQLAlchemy(model_class=Base)
+from app.extensions import db, login_manager
 
 
 class User(UserMixin, db.Model):
@@ -138,3 +132,8 @@ class BannedUser(db.Model):
 
     user = relationship("User", back_populates="banned_users")
     clique = relationship("Clique", back_populates="banned_users")
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))

@@ -22,12 +22,12 @@
               <td>{{ r.type }}</td>
               <td>
                 <form
-                  action="{{ url_for('delete_user_route', user_id=r.user.id) }}" method="POST"
+                  action="{{ url_for('main.delete_user_route', user_id=r.user.id) }}" method="POST"
                   onsubmit="return confirm('This will delete the user, entire cliques if they are their admin, and their data from other cliques. Proceed?');"
                   style="display: inline">
                   <button type="submit" class="btn btn-sm btn-outline-danger">Delete user</button>
                 </form>
-                <form action="{{ url_for('delete_notification', id=r.id) }}" method="POST" style="display: inline">
+                <form action="{{ url_for('main.delete_notification', id=r.id) }}" method="POST" style="display: inline">
                   <button type="submit" class="btn btn-sm btn-secondary">Ignore</button>
                 </form>
               </td>

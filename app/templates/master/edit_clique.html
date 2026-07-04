@@ -18,18 +18,18 @@
             {% else %}
               <span>{{ cu.user.name }}</span>
               <div class="d-flex align-items-center" style="gap: 6px">
-                <form action="{{ url_for('kick_user', clique_id=clique.id, user_id=cu.user.id) }}" method="POST"
+                <form action="{{ url_for('main.kick_user', clique_id=clique.id, user_id=cu.user.id) }}" method="POST"
                   onsubmit="
                     return confirm('Kicking the user will remove them from the clique and delete all their reviews. If any marker has only their review, it will also be deleted. However, they can rejoin later unless banned. Are you sure?');">
                   <button type="submit" class="btn btn-sm btn-warning"><i class="bi bi-person-dash"></i> Kick</button>
                 </form>
 
-                <form action="{{ url_for('ban_user', clique_id=clique.id, user_id=cu.user.id) }}" method="POST" onsubmit="return confirmBanReason(this);">
+                <form action="{{ url_for('main.ban_user', clique_id=clique.id, user_id=cu.user.id) }}" method="POST" onsubmit="return confirmBanReason(this);">
                   <input type="hidden" name="reason" />
                   <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-person-slash"></i> Ban</button>
                 </form>
 
-                <form action="{{ url_for('transfer_admin', clique_id=clique.id, user_id=cu.user.id) }}" method="POST"
+                <form action="{{ url_for('main.transfer_admin', clique_id=clique.id, user_id=cu.user.id) }}" method="POST"
                   onsubmit="return confirm('Are you sure you want to transfer admin authorities from the current admin to this user?');">
                   <button type="submit" class="btn btn-sm btn-secondary">Make Admin</button>
                 </form>
@@ -60,7 +60,7 @@
               <td>{{ '%.2f' % um.marker.average_review if um.marker.total_reviews > 0 else "N/A" }}</td>
               <td>
                 <form
-                  action="{{ url_for('remove_marker_from_clique', clique_id=clique.id, marker_id=um.marker.id) }}"
+                  action="{{ url_for('main.remove_marker_from_clique', clique_id=clique.id, marker_id=um.marker.id) }}"
                   method="POST" style="display: inline">
                   <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
                 </form>
@@ -93,7 +93,7 @@
               <td>{{ review.stars }}</td>
               <td>
                 <form
-                  action="{{ url_for('delete_review_from_clique', review_id=review.id, clique_id=clique.id) }}"
+                  action="{{ url_for('main.delete_review_from_clique', review_id=review.id, clique_id=clique.id) }}"
                   method="POST" style="display: inline">
                   <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
                 </form>
@@ -127,7 +127,7 @@
               <td class="text-break">{{ event.description }}</td>
               <td>{{ event.user.name }}</td>
               <td>
-                <form action="{{ url_for('update_event', event_id=event.id) }}" method="POST" style="display: inline">
+                <form action="{{ url_for('main.update_event', event_id=event.id) }}" method="POST" style="display: inline">
                   <button class="btn btn-sm btn-outline-danger" name="action" value="delete" type="submit">Delete</button>
                 </form>
               </td>

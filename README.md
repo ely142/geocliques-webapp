@@ -9,7 +9,7 @@
 > 🎓 This application was originally co-developed as a 2025 joint academic capstone project. This repository represents my independent, refactored fork.
 
 <div align="center">
-  <img src="./static/assets/demo.gif" alt="Project Demo" width="100%">
+  <img src="./app/static/assets/demo.gif" alt="Project Demo" width="100%">
 </div>
 
 ## 🎯 Motivation
@@ -42,11 +42,12 @@ This platform bridges that gap by providing a dedicated, map-based hub built spe
 
 ## 💻 Tech Stack
 
-* **Backend:** Flask (Routing) & SQLAlchemy (ORM models)
+* **Backend:** Flask (App Factory, Blueprints) & SQLAlchemy 2.0 (ORM)
 * **Frontend:** Vanilla JavaScript, Bootstrap & Jinja2 (Server-side rendering)
 * **Database:** PostgreSQL (Production) & SQLite (Local sandbox)
 * **Mapping Engine:** Leaflet.js (Open-source interactive maps)
 * **Security & Search:** Werkzeug (Cryptographic hashing) & RapidFuzz (Fuzzy string matching)
+* **Testing:** Pytest (In-memory SQLite isolation)
 
 ## 🚀 Getting Started
 
@@ -79,53 +80,78 @@ pip install -r requirements.txt
 ```
 ### 4. Configure Environment Variables
 
-Create a .env file in the root directory.
+Create a `.env` file in the root directory.
 
-> Note: The .env file is listed in .gitignore to prevent sensitive keys from being pushed to the repository. You must create this file manually.
+> 💡Note: The .env file is listed in .gitignore to prevent sensitive keys from being pushed to the repository. You must create this file manually.
 
-Add the following keys to your .env file:
+Add the following keys to your `.env` file:
 ```bash
-FLASK_APP=main.py
+FLASK_APP=run.py
 FLASK_DEBUG=1
 SECRET_KEY="your_super_secret_key_here"
 DATABASE_URL="sqlite:///users.db" # Optional: Defaults to this SQLite path if left blank
 ```
 ### 5. Run the Application
 
-Start the Flask development server:
+Execute `run.py` to start the server. This entry point establishes the Application Factory context, automatically generating the local SQLite database and its tables on the first run.
+
+**On WSL / Linux / macOS:**
 ```bash
-flask run
+python3 run.py
+```
+
+**On Windows:**
+```bash
+python run.py
 ```
 The application will now be running on http://127.0.0.1:5000.
+
+## 🧪 Testing
+
+The application utilizes `pytest` for optional local testing. If you wish to verify the application state, execute:
+```bash
+pytest -v
+```
+> 💡Note: To protect your local data, the test suite automatically routes all operations to an isolated, in-memory SQLite database, guaranteeing complete separation from your development environment.
 
 ## 📂 Folder Structure
 
 ```
 geocliques-webapp/
-├── instance/            # Local SQLite database (gitignored)
-├── static/              # Frontend web assets
-│   ├── css/             # Stylesheets
-│   ├── assets/          # Static media & default avatars
-│   └── js/              # Interactive UI logic
-├── templates/           # Jinja2 HTML templates
-│   ├── master/          # Platform management dashboard
-│   ├── user/            # Public-facing views
-│   ├── base.html        # Master layout wrapper
-│   ├── index.html       # Public landing page
-│   ├── login.html       # Authentication: Login
-│   ├── register.html    # Authentication: Registration
-│   └── userguide.html   # User documentation & help
-├── models.py            # SQLAlchemy ORM models
-├── main.py              # App entry point & route controllers
-├── utils.py             # Shared helper functions
-├── .env                 # Environment variables (gitignored)
-├── requirements.txt     # Python dependencies
-├── pyproject.toml       # Linter configuration
-├── .gitignore           # Untracked files and directories
-└── README.md            # Project documentation
+├── app/                     # Core application package
+│   ├── __init__.py          # Application Factory & Blueprint registration
+│   ├── static/              # Frontend web assets
+│   │   ├── css/             # Stylesheets
+│   │   ├── assets/          # Static media & default avatars
+│   │   └── js/              # Interactive UI logic
+│   ├── templates/           # Jinja2 HTML templates
+│   │   ├── master/          # Platform management dashboard
+│   │   ├── user/            # Public-facing views
+│   │   ├── base.html        # Master layout wrapper
+│   │   ├── index.html       # Public landing page
+│   │   ├── login.html       # Authentication: Login
+│   │   ├── register.html    # Authentication: Registration
+│   │   └── userguide.html   # User documentation & help
+│   ├── models.py            # SQLAlchemy ORM models
+│   ├── extensions.py        # Decoupled Flask extensions (db, login_manager)
+│   ├── routes.py            # Core endpoint routing logic
+│   └── utils.py             # Shared helper functions
+├── instance/                # Local SQLite database (gitignored)
+├── run.py                   # Application entry point & context initialization
+├── .env                     # Environment variables (gitignored)
+├── requirements.txt         # Python dependencies
+├── pyproject.toml           # Linter configuration
+├── tests/                   # Pytest testing suite
+│   ├── conftest.py          # Test fixtures & isolated in-memory SQLite setup
+│   └── test_routes.py       # Blueprint & App Factory route verification
+├── pytest.ini               # Pytest execution configuration
+├── .gitignore               # Untracked files and directories
+└── README.md                # Project documentation
 ```
 
 ## ⚙️ Architecture & Technical Decisions
+
+* **Application Factory Architecture:** Core application instantiation is handled via a Flask Application Factory pattern to eliminate circular dependencies. By decoupling the routing logic into a primary Blueprint, a modular foundation is established that natively supports the separation of concerns through domain-specific Blueprints.
 
 * **Internal Developer Tooling:** A protected administrative dashboard was implemented to decouple internal platform operations from the user-facing web app, providing developers with a secure GUI for data management and content moderation without requiring direct database access.
 
