@@ -6,8 +6,8 @@ from app.models import Event, Marker, Review, User
 
 SAFE_GET_ROUTES = [
     "/",
-    "/login",
-    "/register",
+    "/auth/login",
+    "/auth/register",
     "/select-layer",
     "/user_guide",
     "/user_edit_user",
@@ -20,7 +20,7 @@ SAFE_GET_ROUTES = [
     "/cliques",
     "/master/reports",
     "/maptest",
-    "/logout",
+    "/auth/logout",
     "/search_cliques",
     "/master/reports",
 ]
@@ -39,7 +39,7 @@ def test_unauthenticated_user_is_redirected(client):
     response = client.get("/maptest")
 
     assert response.status_code == 302  # Redirect code
-    assert "/login" in response.headers["Location"]
+    assert "/auth/login" in response.headers["Location"]
 
 
 @pytest.mark.parametrize("origin_route, expected_redirect_url", [("main.settings", "/settings"), ("main.maptest", "/maptest")])
@@ -57,7 +57,7 @@ def test_update_review_dynamic_redirect(app, client, origin_route, expected_redi
         db.session.add(fake_review)
         db.session.commit()
 
-    client.post("/login", data={"email": "test@test.com", "password": "Password123!"})
+    client.post("/auth/login", data={"email": "test@test.com", "password": "Password123!"})
 
     response = client.post(
         "/update-review/1",  # The dynamic route using marker id 1
@@ -86,7 +86,7 @@ def test_update_event_dynamic_redirect(app, client, origin_route, expected_redir
         db.session.add(fake_event)
         db.session.commit()
 
-    client.post("/login", data={"email": "user@test.com", "password": "Password123!"})
+    client.post("/auth/login", data={"email": "user@test.com", "password": "Password123!"})
 
     response = client.post(
         "/update-event/1",

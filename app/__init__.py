@@ -22,7 +22,7 @@ def create_app(test_config=None):
     db.init_app(app)
     login_manager.init_app(app)
 
-    login_manager.login_view = "main.login"
+    login_manager.login_view = "auth.login"
     login_manager.login_message_category = "info"
 
     from app.auth import auth_bp

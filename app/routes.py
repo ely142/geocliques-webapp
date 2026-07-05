@@ -1754,7 +1754,7 @@ def delete_account():
     db.session.commit()
     logout_user()
     flash("Your account has been successfully deleted. We're sorry to see you go.", "info")
-    return redirect(url_for("main.login"))
+    return redirect(url_for("auth.login"))
 
 
 @main_bp.route("/delete_user/<int:user_id>", methods=["POST"])

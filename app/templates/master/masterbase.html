@@ -19,10 +19,10 @@
           <!-- Hide the login/registration navigation for logged-in users -->
           {% if not logged_in: %}
             <li class="nav-item">
-              <a class="nav-link nav-modern" href="{{ url_for('main.login') }}">Login</a>
+              <a class="nav-link nav-modern" href="{{ url_for('auth.login') }}">Login</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link nav-modern" href="{{ url_for('main.register') }}">Register</a>
+              <a class="nav-link nav-modern" href="{{ url_for('auth.register') }}">Register</a>
             </li>
           {% endif %}
           <li class="nav-item">
