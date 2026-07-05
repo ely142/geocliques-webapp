@@ -4,7 +4,7 @@ function attachNotificationHandlers() {
     button.addEventListener('click', () => {
       const notifId = button.getAttribute('data-id');
 
-      fetch('/get_notifications')
+      fetch('/api/notif/get_notifications')
         .then((res) => res.json())
         .then((data) => {
           const notif = data.notifications.find((n) => n.id == notifId);
@@ -19,7 +19,7 @@ function attachNotificationHandlers() {
               .then((res) => res.json())
               .then((data) => {
                 alert(data.message || 'Joined!');
-                return fetch(`/delete_notification/${notifId}`, { method: 'POST' });
+                return fetch(`/api/notif/delete_notification/${notifId}`, { method: 'POST' });
               })
               .then(() => {
                 location.reload(); // Reload the page to show the new clique on the map
@@ -31,7 +31,7 @@ function attachNotificationHandlers() {
               .then((res) => res.json())
               .then((data) => {
                 alert(data.message || 'Request sent to admin.');
-                return fetch(`/delete_notification/${notifId}`, { method: 'POST' });
+                return fetch(`/api/notif/delete_notification/${notifId}`, { method: 'POST' });
               });
           }
 
@@ -57,7 +57,7 @@ function attachNotificationHandlers() {
       const confirmed = confirm('Are you sure you want to decline this request?');
       if (!confirmed) return;
 
-      fetch(`/delete_notification/${notifId}`, { method: 'POST' }).then(() => {
+      fetch(`/api/notif/delete_notification/${notifId}`, { method: 'POST' }).then(() => {
         button.closest('.notification-item').remove();
         if (document.querySelectorAll('.notification-item').length === 0) {
           refreshNotificationList();
@@ -87,7 +87,7 @@ function attachNotificationHandlers() {
     button.addEventListener('click', () => {
       const notifId = button.getAttribute('data-id');
 
-      fetch(`/delete_notification/${notifId}`, { method: 'POST' }).then(() => {
+      fetch(`/api/notif/delete_notification/${notifId}`, { method: 'POST' }).then(() => {
         button.closest('.notification-item').remove();
         if (document.querySelectorAll('.notification-item').length === 0) {
           refreshNotificationList();
@@ -105,7 +105,7 @@ function attachNotificationHandlers() {
         .then((res) => res.json())
         .then((data) => {
           alert(data.message || 'Request sent.');
-          return fetch(`/delete_notification/${notifId}`, { method: 'POST' });
+          return fetch(`/api/notif/delete_notification/${notifId}`, { method: 'POST' });
         })
         .then(() => {
           button.closest('.notification-item').remove();
@@ -119,7 +119,7 @@ function attachNotificationHandlers() {
 
 function refreshNotificationList() {
   const list = document.getElementById('notifications-list');
-  fetch('/get_notifications')
+  fetch('/api/notif/get_notifications')
     .then((res) => res.json())
     .then((data) => {
       list.innerHTML = '';
