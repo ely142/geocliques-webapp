@@ -7,45 +7,48 @@
 {% block content %}
 <div class="login-register-body">
   <div class="wrapper">
-    <h1>Login</h1>
+    <h1>Register</h1>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          {% if category in ['danger', 'info'] %}
+    {% with messages = get_flashed_messages(with_categories=true) %} 
+      {% if messages %} 
+        {% for category, message in messages %} 
+          {% if category in ['danger'] %}
             <div class="alert alert-{{ category }}">{{ message }}</div>
-          {% endif %}
+          {% endif %} 
         {% endfor %}
-      {% endif %}
+      {% endif %} 
     {% endwith %}
 
-    <form method="post">
+    <form action="{{ url_for('auth.register') }}" method="post">
+      <div class="input-box">
+        <i class="bi bi-person"></i>
+        <input type="text" name="name" placeholder="Name" autocomplete="name" required="required" />
+      </div>
       <div class="input-box">
         <i class="bi bi-envelope"></i>
-        <input type="text" name="email" placeholder="Email" autocomplete="email" required="required" />
+        <input type="email" name="email" placeholder="Email" autocomplete="email" required="required" />
       </div>
       <div class="input-box">
         <i class="bi bi-lock"></i>
-        <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password"
-          required="required" />
+        <input type="password" id="password" name="password" placeholder="Password" autocomplete="new-password" required="required" />
         <i class="bi bi-eye-slash" id="togglePassword" style="margin-left: 280px; cursor: pointer"></i>
       </div>
-      <button type="submit" class="btn">Login</button>
+      <button type="submit" class="btn">Register</button>
       <div class="register-link">
-        <p>Don't have an account? <a href="{{ url_for('main.register') }}">Register</a></p>
+        <p>Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
       </div>
     </form>
   </div>
 </div>
 
 <div id="map_login_register"></div>
-{% endblock %} 
+{% endblock %}
 
 {% block scripts %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-  const map = L.map('map_login_register', { // For decorative purposes
+  const map = L.map('map_login_register', {
     zoomControl: false,
     attributionControl: false,
     dragging: false,
