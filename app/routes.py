@@ -66,7 +66,7 @@ def map_keys():
 @login_required
 def maptest():
     if current_user.email == "adminadmin@gmail.com":
-        return render_template("master/masterbase.html", name=current_user.name, logged_in=True)
+        return render_template("layouts/masterbase.html", name=current_user.name, logged_in=True)
     selected_layer = session.get("selected_layer", "default")
     return render_template("user/maptest.html", name=current_user.name, logged_in=True, selected_layer=selected_layer)
 
