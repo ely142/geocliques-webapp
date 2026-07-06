@@ -15,13 +15,12 @@ SAFE_GET_ROUTES = [
     "/feed",
     "/settings",
     "/create-clique",
-    "/users",
-    "/cliques",
+    "/master/users",
+    "/master/cliques",
     "/master/reports",
     "/maptest",
     "/auth/logout",
     "/search_cliques",
-    "/master/reports",
 ]
 
 

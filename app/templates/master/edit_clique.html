@@ -60,7 +60,7 @@
               <td>{{ '%.2f' % um.marker.average_review if um.marker.total_reviews > 0 else "N/A" }}</td>
               <td>
                 <form
-                  action="{{ url_for('main.remove_marker_from_clique', clique_id=clique.id, marker_id=um.marker.id) }}"
+                  action="{{ url_for('master.remove_marker_from_clique', clique_id=clique.id, marker_id=um.marker.id) }}"
                   method="POST" style="display: inline">
                   <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
                 </form>
@@ -93,7 +93,7 @@
               <td>{{ review.stars }}</td>
               <td>
                 <form
-                  action="{{ url_for('main.delete_review_from_clique', review_id=review.id, clique_id=clique.id) }}"
+                  action="{{ url_for('master.delete_review_from_clique', review_id=review.id, clique_id=clique.id) }}"
                   method="POST" style="display: inline">
                   <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
                 </form>

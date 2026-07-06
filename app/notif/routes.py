@@ -118,7 +118,7 @@ def delete_notification(id):
         if current_user.email == "adminadmin@gmail.com":  # Only master can delete report-type notifications
             db.session.delete(note)
             db.session.commit()
-            return redirect(url_for("main.master_reports"))
+            return redirect(url_for("master.master_reports"))
         else:
             return redirect(url_for("main.home"))
 
