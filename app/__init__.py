@@ -26,6 +26,7 @@ def create_app(test_config=None):
     login_manager.login_message_category = "info"
 
     from app.auth import auth_bp
+    from app.clique import clique_bp
     from app.event import event_bp
     from app.map import map_bp
     from app.master import master_bp
@@ -38,6 +39,7 @@ def create_app(test_config=None):
     app.register_blueprint(notif_bp)
     app.register_blueprint(map_bp)
     app.register_blueprint(event_bp)
+    app.register_blueprint(clique_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(main_bp)
 
