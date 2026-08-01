@@ -279,8 +279,8 @@ if (document.getElementById('map') && !window.disableUniversalMap) {
 
         popupContent += `
           <div style="display: flex; justify-content: center; margin-top: 8px;">
-            <a class="btn btn-info-small" style="margin-right: 8px;" href="/add-event/${markerId}/${cliqueId}">Add Event</a>
-            <a class="btn btn-info-small" href="/edit-events/${markerId}/${cliqueId}">Edit Events</a>
+            <a class="btn btn-info-small" style="margin-right: 8px;" href="/event/add/${markerId}/${cliqueId}">Add Event</a>
+            <a class="btn btn-info-small" href="/event/edit-events/${markerId}/${cliqueId}">Edit Events</a>
           </div>
         `;
 

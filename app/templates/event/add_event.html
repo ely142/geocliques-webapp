@@ -11,7 +11,7 @@
   <br /><br /><br />
   <h3>📆 Create an Event</h3>
   <br />
-  <form id="eventForm" method="POST" action="{{ url_for('main.add_event', marker_id=marker_id, clique_id=clique_id) }}">
+  <form id="eventForm" method="POST" action="{{ url_for('event.add_event', marker_id=marker_id, clique_id=clique_id) }}">
     <div class="form-group">
       <label for="datetime" style="color: #2c2c2c" class="form-label">Date & Time</label>
       <input type="text" class="form-control" id="datetime" placeholder="Select date and time" required />

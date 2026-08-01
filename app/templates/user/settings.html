@@ -239,7 +239,7 @@
                 <td>
                   <button class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#editModal-{{ event.event_id }}"
                     data-backdrop="static" data-keyboard="false">Edit</button>
-                  <form action="{{ url_for('main.update_event', event_id=event.event_id) }}" method="POST" style="display: inline">
+                  <form action="{{ url_for('event.update_event', event_id=event.event_id) }}" method="POST" style="display: inline">
                     <input type="hidden" name="next" value="main.settings" />
                     <button class="btn btn-sm btn-outline-danger" name="action" value="delete" type="submit">Delete</button>
                   </form>
@@ -267,7 +267,7 @@
             </div>
 
             <div class="modal-body">
-              <form class="eventForm" method="POST" action="{{ url_for('main.update_event', event_id=event.event_id) }}">
+              <form class="eventForm" method="POST" action="{{ url_for('event.update_event', event_id=event.event_id) }}">
                 <div class="form-group">
                   <label for="datetime-{{ event.event_id }}">Date & Time</label>
                   <input type="text" class="form-control datetimepicker" id="datetime-{{ event.event_id }}"

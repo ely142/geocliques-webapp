@@ -127,7 +127,7 @@
               <td class="text-break">{{ event.description }}</td>
               <td>{{ event.user.name }}</td>
               <td>
-                <form action="{{ url_for('main.update_event', event_id=event.id) }}" method="POST" style="display: inline">
+                <form action="{{ url_for('event.update_event', event_id=event.id) }}" method="POST" style="display: inline">
                   <button class="btn btn-sm btn-outline-danger" name="action" value="delete" type="submit">Delete</button>
                 </form>
               </td>

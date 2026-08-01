@@ -83,7 +83,7 @@ def test_update_review_dynamic_redirect(client, map_db_setup, origin_route, expe
     assert expected_redirect_url in response.headers["Location"]
 
 
-@pytest.mark.parametrize("origin_route, expected_redirect_url", [("main.settings", "/settings"), ("", "/edit-events/1/1")])
+@pytest.mark.parametrize("origin_route, expected_redirect_url", [("main.settings", "/settings"), ("", "/event/edit-events/1/1")])
 @pytest.mark.parametrize("form_action", ["edit", "delete"])
 def test_update_event_dynamic_redirect(app, client, map_db_setup, origin_route, expected_redirect_url, form_action):
     """Verify updating/deleting an event correctly routes back to the specific origin page."""
@@ -105,7 +105,7 @@ def test_update_event_dynamic_redirect(app, client, map_db_setup, origin_route, 
     client.post("/auth/login", data={"email": map_db_setup["email"], "password": map_db_setup["password"]})
 
     response = client.post(
-        f"/update-event/{event_id}",
+        f"/event/update/{event_id}",
         data={"action": form_action, "next": origin_route, "date": "2026-07-04", "time": "12:00", "description": "Updated event description"},
     )
 
