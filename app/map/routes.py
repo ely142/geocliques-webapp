@@ -36,7 +36,7 @@ def maptest():
     if current_user.email == "adminadmin@gmail.com":
         return render_template("layouts/masterbase.html", name=current_user.name, logged_in=True)
     selected_layer = session.get("selected_layer", "default")
-    return render_template("user/maptest.html", name=current_user.name, logged_in=True, selected_layer=selected_layer)
+    return render_template("map/maptest.html", name=current_user.name, logged_in=True, selected_layer=selected_layer)
 
 
 @map_bp.route("/geojson-features", methods=["GET"])
@@ -213,7 +213,7 @@ def edit_review(marker_id):
     is_only_review = marker.total_reviews == 1
     next = request.args.get("next", "map.maptest")
     return render_template(
-        "user/edit_review.html",
+        "map/edit_review.html",
         review=review,
         marker=marker,
         is_only_review=is_only_review,
@@ -269,7 +269,7 @@ def select_layer():
     ]
 
     return render_template(
-        "user/select_layer.html",
+        "map/select_layer.html",
         layers=layers,
         selected_layer=selected_layer,
         name=current_user.name,
