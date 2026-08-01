@@ -25,7 +25,7 @@
 
       <div class="modal-buttons mt-3">
         <button class="cancel-btn" onclick="closeModal()">Cancel</button>
-        <form id="deleteForm" method="POST" action="{{ url_for('main.delete_account') }}" style="display: inline">
+        <form id="deleteForm" method="POST" action="{{ url_for('user.delete_account') }}" style="display: inline">
           <button type="button" class="confirm-delete" onclick="askForPassword()">Yes, Delete</button>
           <input type="hidden" name="confirmed" value="true" />
         </form>
@@ -78,7 +78,7 @@
       return;
     }
 
-    fetch('verify-password', {
+    fetch('{{ url_for("user.verify_password") }}', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: password }),

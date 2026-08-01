@@ -243,7 +243,7 @@ def master_reports():
 @login_required
 def delete_user_route(user_id):
     if current_user.email != "adminadmin@gmail.com":
-        return redirect(url_for("main.settings"))
+        return redirect(url_for("user.settings"))
 
     delete_user(user_id)
     db.session.commit()

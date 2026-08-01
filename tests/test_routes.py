@@ -9,11 +9,11 @@ SAFE_GET_ROUTES = [
     "/auth/register",
     "/map/select-layer",
     "/user_guide",
-    "/user_edit_user",
-    "/change_password",
-    "/manage_account",
+    "/user/edit",
+    "/user/change_password",
+    "/user/manage_account",
     "/feed",
-    "/settings",
+    "/user/settings",
     "/create-clique",
     "/master/users",
     "/master/cliques",
@@ -62,7 +62,7 @@ def test_unauthenticated_user_is_redirected(client):
     assert "/auth/login" in response.headers["Location"]
 
 
-@pytest.mark.parametrize("origin_route, expected_redirect_url", [("main.settings", "/settings"), ("map.maptest", "/maptest")])
+@pytest.mark.parametrize("origin_route, expected_redirect_url", [("user.settings", "/settings"), ("map.maptest", "/maptest")])
 @pytest.mark.parametrize("form_action", ["save", "delete"])
 def test_update_review_dynamic_redirect(client, map_db_setup, origin_route, expected_redirect_url, form_action):
     """Verify that updating a review dynamically redirects back to the origin page."""
@@ -83,7 +83,7 @@ def test_update_review_dynamic_redirect(client, map_db_setup, origin_route, expe
     assert expected_redirect_url in response.headers["Location"]
 
 
-@pytest.mark.parametrize("origin_route, expected_redirect_url", [("main.settings", "/settings"), ("", "/event/edit-events/1/1")])
+@pytest.mark.parametrize("origin_route, expected_redirect_url", [("user.settings", "/settings"), ("", "/event/edit-events/1/1")])
 @pytest.mark.parametrize("form_action", ["edit", "delete"])
 def test_update_event_dynamic_redirect(app, client, map_db_setup, origin_route, expected_redirect_url, form_action):
     """Verify updating/deleting an event correctly routes back to the specific origin page."""

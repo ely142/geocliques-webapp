@@ -90,7 +90,7 @@ def update_event(event_id):
             if current_user.email == "adminadmin@gmail.com":
                 return redirect(url_for("master.edit_clique", clique_id=event.clique_id))
 
-            if next == "main.settings":
+            if next == "user.settings":
                 return redirect(url_for(next))
             else:
                 return redirect(url_for("event.edit_event", marker_id=event.marker_id, clique_id=event.clique_id))
@@ -106,7 +106,7 @@ def update_event(event_id):
 
             db.session.commit()
 
-            if next == "main.settings":
+            if next == "user.settings":
                 return redirect(url_for(next))
             else:
                 return redirect(url_for("event.edit_event", marker_id=event.marker_id, clique_id=event.clique_id))
