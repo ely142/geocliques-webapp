@@ -31,12 +31,14 @@ def create_app(test_config=None):
     from app.master import master_bp
     from app.notif import notif_bp
     from app.routes import main_bp
+    from app.user import user_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(master_bp)
     app.register_blueprint(notif_bp)
     app.register_blueprint(map_bp)
     app.register_blueprint(event_bp)
+    app.register_blueprint(user_bp)
     app.register_blueprint(main_bp)
 
     return app
