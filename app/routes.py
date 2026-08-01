@@ -20,9 +20,7 @@ from app.models import (
     UserMarker,
 )
 from app.utils import (
-    assign_clique_colors,
     delete_clique_and_contents,
-    delete_review_and_update_marker,
     delete_user,
     delete_user_from_clique,
     is_valid_email,
@@ -33,10 +31,10 @@ from app.utils import (
 main_bp = Blueprint("main", __name__)
 
 
-@main_bp.before_request
+@main_bp.before_app_request
 def delete_expired_events():
     # Allowed endpoints represent views where users interact with map data
-    if request.endpoint in ["maptest", "add_event", "get_user_markers", "edit_event"]:
+    if request.endpoint in ["map.maptest", "main.add_event", "map.get_user_markers", "main.edit_event"]:
         today = date.today()
 
         expired_events = Event.query.filter(Event.date < today).all()
@@ -47,265 +45,8 @@ def delete_expired_events():
         db.session.commit()
 
 
-@main_bp.route("/map_keys.js")
-def map_keys():
-    key = os.getenv("MAP_THUNDERFOREST_KEY", "")
-    return (
-        f"window.MAP_KEYS = {{ thunderforest: '{key}' }};",
-        200,
-        {"Content-Type": "application/javascript"},
-    )
-
-
 # MAP FUNCTIONS
 """ functions relating to displaying and interacting with the Leaflet map"""
-
-
-@main_bp.route("/maptest")
-@login_required
-def maptest():
-    if current_user.email == "adminadmin@gmail.com":
-        return render_template("layouts/masterbase.html", name=current_user.name, logged_in=True)
-    selected_layer = session.get("selected_layer", "default")
-    return render_template("user/maptest.html", name=current_user.name, logged_in=True, selected_layer=selected_layer)
-
-
-@main_bp.route("/geojson-features", methods=["GET"])
-@login_required
-def get_user_markers():
-    # Extract current user markers and setup colors
-    user_clique_ids = {cu.clique_id for cu in current_user.cliques}
-    user_markers = UserMarker.query.filter(UserMarker.clique_id.in_(user_clique_ids)).all()
-    clique_ids = sorted(user_clique_ids)
-    clique_color_map = assign_clique_colors(clique_ids)
-
-    features = []
-    for um in user_markers:
-        marker = um.marker
-        clique = db.session.get(Clique, um.clique_id)
-
-        # Current user reviews
-        review = Review.query.filter_by(marker_id=marker.id, user_id=current_user.id).first()
-        user_review = None
-        if review:
-            user_review = {"stars": review.stars, "commentary": review.commentary}
-
-        # Peer reviews
-        all_reviews = Review.query.filter(Review.marker_id == marker.id, Review.user_id != current_user.id).all()
-        other_reviews = [
-            {
-                "stars": r.stars,
-                "commentary": r.commentary,
-                "user": db.session.get(User, r.user_id).name,
-                "user_pic": db.session.get(User, r.user_id).picture,
-            }
-            for r in all_reviews
-        ]
-
-        # Current user events
-        all_user_events = Event.query.filter_by(marker_id=marker.id, user_id=current_user.id).all()
-        user_events = [{"date": e.date, "time": e.time, "description": e.description, "is_own_event": True} for e in all_user_events]
-
-        # Peer events
-        all_events = Event.query.filter(Event.marker_id == marker.id, Event.user_id != current_user.id).all()
-        other_events = [
-            {
-                "date": e.date,
-                "time": e.time,
-                "description": e.description,
-                "user": db.session.get(User, e.user_id).name,
-                "user_pic": db.session.get(User, e.user_id).picture,
-                "is_own_event": False,
-            }
-            for e in all_events
-        ]
-
-        # Construct GeoJSON feature
-        features.append(
-            {
-                "type": "Feature",
-                "geometry": {"type": "Point", "coordinates": [marker.long, marker.lat]},
-                "properties": {
-                    "description": marker.description or "No description",
-                    "marker_id": marker.id,
-                    "average_review": marker.average_review,
-                    "total_reviews": marker.total_reviews,
-                    "user_review": user_review,
-                    "reviews": other_reviews,
-                    "user_events": user_events,
-                    "events": other_events,
-                    "clique_id": um.clique_id,
-                    "clique_name": clique.name,
-                    "clique_color": clique_color_map[um.clique_id],
-                    "icon": clique.icon,
-                },
-            }
-        )
-
-    return jsonify(features)
-
-
-@main_bp.route("/add-marker", methods=["POST"])
-@login_required
-def add_marker():
-    try:
-        data = request.get_json()
-        latitude = data["latitude"]
-        longitude = data["longitude"]
-        title = data.get("title", "")
-        commentary = data.get("commentary", "")
-        rating = int(data.get("rating"))
-        if not title or not (1 <= rating <= 5):
-            return jsonify({"success": False, "message": "Fields (title, rating) are required."}), 400
-
-        clique_id = int(data.get("clique_id"))
-
-        rating = int(data.get("rating"))
-        if rating < 1 or rating > 5:
-            return jsonify({"success": False, "message": "Invalid rating value."}), 400
-
-        user_clique_ids = [cu.clique_id for cu in current_user.cliques]
-        if clique_id not in user_clique_ids:
-            return jsonify({"success": False, "message": "You are not a member of this clique."}), 403
-
-        new_marker = Marker(
-            lat=latitude,
-            long=longitude,
-            description=title,
-            total_reviews=1,
-            average_review=float(rating),
-        )
-
-        db.session.add(new_marker)
-        db.session.flush()
-
-        user_marker = UserMarker(
-            user_id=current_user.id,
-            marker_id=new_marker.id,
-            clique_id=clique_id,
-            creation_date=datetime.today().strftime("%Y-%m-%d"),
-        )
-        db.session.add(user_marker)
-
-        new_review = Review(
-            stars=rating,
-            commentary=commentary,
-            marker_id=new_marker.id,
-            user_id=current_user.id,
-            creation_date=datetime.today().strftime("%Y-%m-%d"),
-        )
-        db.session.add(new_review)
-
-        db.session.commit()
-
-        return jsonify({"success": True, "message": "Marker added successfully!"}), 201
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
-
-
-@main_bp.route("/edit-review/<int:marker_id>", methods=["GET"])
-@login_required
-def edit_review(marker_id):
-    review = Review.query.filter_by(marker_id=marker_id, user_id=current_user.id).first_or_404()
-    marker = review.marker
-    is_only_review = marker.total_reviews == 1
-    next = request.args.get("next", "main.maptest")
-    return render_template(
-        "user/edit_review.html",
-        review=review,
-        marker=marker,
-        is_only_review=is_only_review,
-        logged_in=True,
-        name=current_user.name,
-        next=next,
-    )
-
-
-@main_bp.route("/update-review/<int:marker_id>", methods=["POST"])
-@login_required
-def update_review(marker_id):
-    review = Review.query.filter_by(marker_id=marker_id, user_id=current_user.id).first_or_404()
-    marker = review.marker
-    action = request.form.get("action")
-    next = request.form.get("next", "main.maptest")
-
-    if action == "delete":
-        delete_review_and_update_marker(review.id)
-        db.session.commit()
-        return redirect(url_for(next))
-
-    new_stars = int(request.form.get("stars"))
-    new_comment = request.form.get("commentary", "").strip()
-
-    total = marker.total_reviews
-    new_avg = ((marker.average_review * total) - review.stars + new_stars) / total
-    marker.average_review = round(new_avg, 2)
-
-    review.stars = new_stars
-    review.commentary = new_comment
-    db.session.commit()
-    return redirect(url_for(next))
-
-
-@main_bp.route("/rate-marker/<int:marker_id>", methods=["POST"])
-@login_required
-def rate_marker(marker_id):
-    marker = db.get_or_404(Marker, marker_id)
-
-    data = request.get_json()
-    stars = int(data.get("rating"))
-    commentary = data.get("commentary", "").strip()
-
-    if not (1 <= stars <= 5):
-        return jsonify({"success": False, "message": "Star rating is required."}), 400
-
-    existing_review = Review.query.filter_by(marker_id=marker_id, user_id=current_user.id).first()
-    if existing_review:
-        return jsonify({"success": False, "message": "You have already reviewed this marker."}), 400
-
-    new_avg = ((marker.average_review * marker.total_reviews) + stars) / (marker.total_reviews + 1)
-    marker.total_reviews += 1
-    marker.average_review = round(new_avg, 2)
-
-    review = Review(
-        stars=stars,
-        commentary=commentary,
-        marker_id=marker_id,
-        user_id=current_user.id,
-        creation_date=datetime.today().strftime("%Y-%m-%d"),
-    )
-    db.session.add(review)
-    db.session.commit()
-
-    return jsonify({"success": True, "message": "Review added!"})
-
-
-@main_bp.route("/select-layer", methods=["GET", "POST"])
-@login_required
-def select_layer():
-    if request.method == "POST":
-        selected_layer = request.form.get("layer")
-        session["selected_layer"] = selected_layer
-        return redirect(url_for("main.maptest"))
-
-    selected_layer = session.get("selected_layer", "default")
-
-    layers = [
-        ("default", "default"),
-        ("OpenStreetMap.HOT", "alternative"),
-        ("Esri.WorldImagery", "satellite"),
-        ("Thunderforest.Transport", "public transport routes and lines"),
-        ("Thunderforest.OpenCycleMap", "bicycle lanes"),
-        ("Thunderforest.Outdoors", "Outdoors"),
-    ]
-
-    return render_template(
-        "user/select_layer.html",
-        layers=layers,
-        selected_layer=selected_layer,
-        name=current_user.name,
-        logged_in=True,
-    )
 
 
 @main_bp.route("/add-event/<int:marker_id>/<int:clique_id>", methods=["GET", "POST"])
@@ -330,7 +71,7 @@ def add_event(marker_id, clique_id):
 
         db.session.add(new_event)
         db.session.commit()
-        return redirect(url_for("main.maptest"))
+        return redirect(url_for("map.maptest"))
 
     return render_template(
         "user/add_event.html",
@@ -512,26 +253,6 @@ def settings():
         events=events_data,
         logged_in=True,
     )
-
-
-@main_bp.route("/delete-review/<int:review_id>", methods=["POST"])
-@login_required
-def delete_review_route(review_id):
-    review = db.session.get(Review, review_id)
-    if not review or review.user_id != current_user.id:
-        return redirect(url_for("main.settings"))
-
-    delete_review_and_update_marker(review_id)
-    db.session.commit()
-    return redirect(url_for("main.settings"))
-
-
-@main_bp.route("/check_review_solo/<int:review_id>")
-@login_required
-def check_review_solo(review_id):
-    review = db.get_or_404(Review, review_id)
-    marker = review.marker
-    return jsonify({"is_only": len(marker.reviews) == 1})
 
 
 @main_bp.route("/user_edit_user", methods=["GET"])
@@ -805,7 +526,7 @@ def create_clique():
         db.session.add(membership)
         db.session.commit()
 
-        return redirect(url_for("main.maptest"))
+        return redirect(url_for("map.maptest"))
 
     return render_template("user/create_clique.html", name=current_user.name, logged_in=True)
 
@@ -1352,13 +1073,13 @@ def accept_admin_invite(note_id, clique_id):
     clique = db.get_or_404(Clique, clique_id)
 
     if note.user_id != current_user.id or note.type != "invitation to become admin":
-        return redirect(url_for("main.maptest"))
+        return redirect(url_for("map.maptest"))
 
     clique.admin_id = current_user.id
     db.session.delete(note)
     db.session.commit()
 
-    return redirect(url_for("main.maptest"))
+    return redirect(url_for("map.maptest"))
 
 
 @main_bp.route("/decline_admin_invite/<int:note_id>", methods=["POST"])
@@ -1366,11 +1087,11 @@ def accept_admin_invite(note_id, clique_id):
 def decline_admin_invite(note_id):
     note = db.get_or_404(Notification, note_id)
     if note.user_id != current_user.id or note.type != "invitation to become admin":
-        return redirect(url_for("main.maptest"))
+        return redirect(url_for("map.maptest"))
 
     db.session.delete(note)
     db.session.commit()
-    return redirect(url_for("main.maptest"))
+    return redirect(url_for("map.maptest"))
 
 
 @main_bp.route("/report_user", methods=["POST"])

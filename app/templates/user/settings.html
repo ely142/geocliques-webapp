@@ -200,7 +200,7 @@
                   {% endfor %}
                 </td>
                 <td>
-                  <a href="{{ url_for('main.edit_review', marker_id=review.marker_id, next='main.settings') }}" class="btn btn-sm btn-secondary">Edit</a>
+                  <a href="{{ url_for('map.edit_review', marker_id=review.marker_id, next='main.settings') }}" class="btn btn-sm btn-secondary">Edit</a>
                 </td>
               </tr>
             {% endfor %} 

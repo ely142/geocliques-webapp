@@ -46,7 +46,7 @@ def register():
         login_user(new_user)
         if email == "adminadmin@gmail.com":
             return redirect(url_for("master.cliques"))
-        return redirect(url_for("main.maptest"))
+        return redirect(url_for("map.maptest"))
 
     return render_template("auth/register.html", logged_in=current_user.is_authenticated)
 
@@ -69,7 +69,7 @@ def login():
             login_user(user)
             if user.email == "adminadmin@gmail.com":
                 return redirect(url_for("master.cliques"))
-            return redirect(url_for("main.maptest"))
+            return redirect(url_for("map.maptest"))
 
     return render_template("auth/login.html", logged_in=current_user.is_authenticated)
 

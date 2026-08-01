@@ -39,7 +39,7 @@
   {% endif %}
 </div>
 
-<a href="{{ url_for('main.select_layer') }}" id="layer-button" class="add-button layer-button" title="Choose map layer">
+<a href="{{ url_for('map.select_layer') }}" id="layer-button" class="add-button layer-button" title="Choose map layer">
   <i class="fas fa-layer-group"></i>
 </a>
 
@@ -64,7 +64,7 @@
   window.selectedMapLayer = "{{ selected_layer }}";
 </script>
 
-<script src="{{ url_for('main.map_keys') }}"></script>
+<script src="{{ url_for('map.map_keys') }}"></script>
 <script src="{{ url_for('static', filename='js/universal.js') }}"></script>
 
 <script>

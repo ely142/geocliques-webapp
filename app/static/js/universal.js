@@ -124,7 +124,7 @@ if (document.getElementById('map') && !window.disableUniversalMap) {
   }
 
   function loadMarkers() {
-    fetch('/geojson-features')
+    fetch('/map/geojson-features')
       .then(response => response.json())
       .then(data => {
         cachedGeoJsonData = data; 
@@ -174,7 +174,7 @@ if (document.getElementById('map') && !window.disableUniversalMap) {
               Stars: ${userStars}<br>
               ${userComment}
             </div>
-            <a href="/edit-review/${markerId}">
+            <a href="/map/edit-review/${markerId}">
               <button class="btn btn-info-small" style="margin-top:5px;">Edit Review</button>
             </a>
           `;
@@ -344,7 +344,7 @@ if (document.getElementById('map') && !window.disableUniversalMap) {
       return;
     }
 
-    fetch(`/rate-marker/${markerId}`, {
+    fetch(`/map/rate-marker/${markerId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ rating: selected, commentary: commentary }),
@@ -382,7 +382,7 @@ if (document.getElementById('map') && !window.disableUniversalMap) {
       return;
     }
 
-    fetch('/add-marker', {
+    fetch('/map/add-marker', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

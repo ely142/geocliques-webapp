@@ -7,7 +7,7 @@ SAFE_GET_ROUTES = [
     "/",
     "/auth/login",
     "/auth/register",
-    "/select-layer",
+    "/map/select-layer",
     "/user_guide",
     "/user_edit_user",
     "/change_password",
@@ -18,7 +18,7 @@ SAFE_GET_ROUTES = [
     "/master/users",
     "/master/cliques",
     "/master/reports",
-    "/maptest",
+    "/map/maptest",
     "/auth/logout",
     "/search_cliques",
 ]
@@ -56,13 +56,13 @@ def test_all_safe_routes_render_without_url_errors(client, route):
 
 def test_unauthenticated_user_is_redirected(client):
     """Verify origin tracking and redirection logic for protected routes."""
-    response = client.get("/maptest")
+    response = client.get("/map/maptest")
 
     assert response.status_code == 302  # Redirect code
     assert "/auth/login" in response.headers["Location"]
 
 
-@pytest.mark.parametrize("origin_route, expected_redirect_url", [("main.settings", "/settings"), ("main.maptest", "/maptest")])
+@pytest.mark.parametrize("origin_route, expected_redirect_url", [("main.settings", "/settings"), ("map.maptest", "/maptest")])
 @pytest.mark.parametrize("form_action", ["save", "delete"])
 def test_update_review_dynamic_redirect(client, map_db_setup, origin_route, expected_redirect_url, form_action):
     """Verify that updating a review dynamically redirects back to the origin page."""
@@ -70,7 +70,7 @@ def test_update_review_dynamic_redirect(client, map_db_setup, origin_route, expe
     client.post("/auth/login", data={"email": map_db_setup["email"], "password": map_db_setup["password"]})
 
     response = client.post(
-        f"/update-review/{map_db_setup['marker_id']}",
+        f"/map/update-review/{map_db_setup['marker_id']}",
         data={
             "action": form_action,
             "stars": "4",

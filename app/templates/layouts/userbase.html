@@ -18,7 +18,7 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
       <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.maptest') }}">
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('map.maptest') }}">
           {% if current_user.picture != 'default.jpg' %}
             <img
               src="{{ url_for('static', filename='assets/avatars_profile_pics/' + current_user.picture) }}"
@@ -45,7 +45,7 @@
 
             <!-- Map and Navigation -->
             <li class="nav-item">
-              <a class="nav-link nav-modern" href="{{ url_for('main.maptest') }}">Map</a>
+              <a class="nav-link nav-modern" href="{{ url_for('map.maptest') }}">Map</a>
             </li>
             {% if not logged_in: %}
               <li class="nav-item">

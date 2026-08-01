@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container review-edit-container">
-  <form action="{{ url_for('main.update_review', marker_id=marker.id) }}" method="post" onsubmit="syncStars()">
+  <form action="{{ url_for('map.update_review', marker_id=marker.id) }}" method="post" onsubmit="syncStars()">
     <h3 class="mb-4">✍️ Edit Your Review</h3>
 
     <!-- Star Rating -->
