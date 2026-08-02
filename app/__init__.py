@@ -28,10 +28,10 @@ def create_app(test_config=None):
     from app.auth import auth_bp
     from app.clique import clique_bp
     from app.event import event_bp
+    from app.main import main_bp
     from app.map import map_bp
     from app.master import master_bp
     from app.notif import notif_bp
-    from app.routes import main_bp
     from app.user import user_bp
 
     app.register_blueprint(auth_bp)

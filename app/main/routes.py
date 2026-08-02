@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 
-from flask import Blueprint, jsonify, render_template, request
+from flask import jsonify, render_template, request
 from flask_login import current_user, login_required
 
 from app.extensions import db
+from app.main import main_bp
 from app.models import (
     Clique,
     CliqueUser,
@@ -12,8 +13,6 @@ from app.models import (
     User,
     UserMarker,
 )
-
-main_bp = Blueprint("main", __name__)
 
 
 @main_bp.route("/")
