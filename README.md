@@ -159,7 +159,7 @@ geocliques-webapp/
 
 ## ⚙️ Architecture & Technical Decisions
 
-* **Application Factory Architecture:** Core application instantiation is handled via a Flask Application Factory pattern to eliminate circular dependencies. By decoupling the routing logic into a primary Blueprint, a modular foundation is established that natively supports the separation of concerns through domain-specific Blueprints.
+* **Application Factory Architecture:** Core application instantiation is handled via a Flask Application Factory pattern to eliminate circular dependencies. Routing and state logic are decoupled into isolated domain Blueprints, establishing a modular foundation that supports separation of concerns. Additionally, UI templates are domain-namespaced to mirror this structure, while being maintained in a centralized directory to preserve clean inheritance and shared layouts.
 
 * **Internal Developer Tooling:** A protected administrative dashboard was implemented to decouple internal platform operations from the user-facing web app, providing developers with a secure GUI for data management and content moderation without requiring direct database access.
 
