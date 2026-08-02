@@ -1,4 +1,4 @@
-{% extends "user/userbase.html" %} 
+{% extends "layouts/userbase.html" %} 
 
 {% block content %}
 <div class="container mt-5 edit-user-container" style="padding-top: 100px">
@@ -14,7 +14,7 @@
         {% endfor %} 
       {% endif %} 
     {% endwith %}
-    <form action="{{ url_for('main.update_user') }}" method="POST">
+    <form action="{{ url_for('user.update_user') }}" method="POST">
       <div class="form-group">
         <label for="new-name">New Name:</label>
         <input type="text" id="new-name" name="name" autocomplete="name" class="form-control" required />
@@ -26,7 +26,7 @@
       </div>
       <div class="d-flex justify-content-between mt-4">
         <button type="submit" class="btn btn-manage_account">Save Changes</button>
-        <a href="{{ url_for('main.settings') }}" class="btn btn-secondary">Cancel</a>
+        <a href="{{ url_for('user.settings') }}" class="btn btn-secondary">Cancel</a>
       </div>
     </form>
   </div>

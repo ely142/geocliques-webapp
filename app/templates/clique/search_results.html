@@ -1,4 +1,4 @@
-{% extends "user/userbase.html" %} 
+{% extends "layouts/userbase.html" %} 
 
 {% block content %}
 <div style="height: 100vh; overflow-y: scroll">
@@ -51,7 +51,7 @@
   document.querySelectorAll('.search-join-btn').forEach((button) => {
     button.addEventListener('click', () => {
       const cliqueId = button.getAttribute('data-clique-id');
-      fetch(`/join_clique/${cliqueId}`, { method: 'POST' })
+      fetch(`/clique/join_clique/${cliqueId}`, { method: 'POST' })
         .then((res) => res.json())
         .then((data) => {
           alert(data.message || 'Joined!');
@@ -69,7 +69,7 @@
     button.addEventListener('click', () => {
       const cliqueId = button.getAttribute('data-clique-id');
 
-      fetch(`/request_join_protected/${cliqueId}`, {
+      fetch(`/clique/request_join_protected/${cliqueId}`, {
         method: 'POST',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',

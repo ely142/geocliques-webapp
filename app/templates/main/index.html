@@ -1,4 +1,4 @@
-{% extends "base.html" %} 
+{% extends "layouts/base.html" %} 
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/styles-index.css') }}" />
@@ -22,7 +22,7 @@
     <div class="text-container">
       <h1 class="welcome-title">Explore. Share. Connect.</h1>
       <p class="description">A map-based social media, helping people with similar interests to share their favorite spots</p>
-      <a href="{{ url_for('main.register') }}" class="get-started-btn"> Get Started </a>
+      <a href="{{ url_for('auth.register') }}" class="get-started-btn"> Get Started </a>
     </div>
     <div class="image-container">
       <img src="{{ url_for('static', filename='assets/gc_landing_page_pic.png') }}" alt="Geo Cliques" />

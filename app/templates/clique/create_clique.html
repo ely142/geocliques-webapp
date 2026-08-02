@@ -1,4 +1,4 @@
-{% extends "user/userbase.html" %} 
+{% extends "layouts/userbase.html" %} 
 
 {% block content %}
 <div style="height: 100vh; overflow-y: scroll">
@@ -6,7 +6,7 @@
     <br /><br /><br />
     <h3>🔗 Create Your Own Clique</h3>
     <br />
-    <form method="POST" action="{{ url_for('main.create_clique') }}">
+    <form method="POST" action="{{ url_for('clique.create_clique') }}">
       <div class="form-group">
         <label for="name" class="form-label" style="color: #2c2c2c">Clique Name</label>
         <textarea class="form-control" id="name" name="name" rows="1" placeholder="Enter name" required></textarea>
@@ -286,7 +286,7 @@
       <input type="hidden" id="selectedIconInput" name="selectedIcon" />
 
       <button type="submit" class="btn btn-secondary" style="background-color: #6c5ce7">Save</button>
-      <a href="{{ url_for('main.maptest') }}" class="btn btn-secondary">Discard</a>
+      <a href="{{ url_for('map.maptest') }}" class="btn btn-secondary">Discard</a>
     </form>
   </div>
   <div style="height: 100px"></div>

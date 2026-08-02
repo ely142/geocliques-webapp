@@ -1,4 +1,4 @@
-{% extends "master/masterbase.html" %} 
+{% extends "layouts/masterbase.html" %} 
 
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
@@ -20,7 +20,7 @@
     attribution: '&copy; OpenStreetMap contributors',
   }).addTo(map);
 
-  fetch(`/clique-geojson/{{ clique.id }}`)
+  fetch(`/master/clique-geojson/{{ clique.id }}`)
     .then((response) => response.json())
     .then((data) => {
       const layer = L.geoJSON(data, {

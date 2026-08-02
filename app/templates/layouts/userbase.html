@@ -18,7 +18,7 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
       <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.maptest') }}">
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('map.maptest') }}">
           {% if current_user.picture != 'default.jpg' %}
             <img
               src="{{ url_for('static', filename='assets/avatars_profile_pics/' + current_user.picture) }}"
@@ -45,24 +45,24 @@
 
             <!-- Map and Navigation -->
             <li class="nav-item">
-              <a class="nav-link nav-modern" href="{{ url_for('main.maptest') }}">Map</a>
+              <a class="nav-link nav-modern" href="{{ url_for('map.maptest') }}">Map</a>
             </li>
             {% if not logged_in: %}
               <li class="nav-item">
-                <a class="nav-link nav-modern" href="{{ url_for('main.login') }}">Login</a>
+                <a class="nav-link nav-modern" href="{{ url_for('auth.login') }}">Login</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link nav-modern" href="{{ url_for('main.register') }}">Register</a>
+                <a class="nav-link nav-modern" href="{{ url_for('auth.register') }}">Register</a>
               </li>
             {% endif %}
             <li class="nav-item">
               <a class="nav-link nav-modern" href="{{ url_for('main.feed') }}">Feed</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link nav-modern" href="{{ url_for('main.settings') }}">Settings</a>
+              <a class="nav-link nav-modern" href="{{ url_for('user.settings') }}">Settings</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link nav-modern" href="{{ url_for('main.logout') }}">Log Out</a>
+              <a class="nav-link nav-modern" href="{{ url_for('auth.logout') }}">Log Out</a>
             </li>
           </ul>
         </div>

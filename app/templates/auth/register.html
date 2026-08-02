@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "layouts/base.html" %}
 
 {% block head %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -19,7 +19,7 @@
       {% endif %} 
     {% endwith %}
 
-    <form action="{{ url_for('main.register') }}" method="post">
+    <form action="{{ url_for('auth.register') }}" method="post">
       <div class="input-box">
         <i class="bi bi-person"></i>
         <input type="text" name="name" placeholder="Name" autocomplete="name" required="required" />
@@ -35,7 +35,7 @@
       </div>
       <button type="submit" class="btn">Register</button>
       <div class="register-link">
-        <p>Already have an account? <a href="{{ url_for('main.login') }}">Log in</a></p>
+        <p>Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
       </div>
     </form>
   </div>

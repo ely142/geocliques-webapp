@@ -4,7 +4,7 @@ function attachNotificationHandlers() {
     button.addEventListener('click', () => {
       const notifId = button.getAttribute('data-id');
 
-      fetch('/get_notifications')
+      fetch('/api/notif/get_notifications')
         .then((res) => res.json())
         .then((data) => {
           const notif = data.notifications.find((n) => n.id == notifId);
@@ -15,11 +15,11 @@ function attachNotificationHandlers() {
 
           if (type === 'invitation' || type === 'invitation admin') {
             // Direct join
-            return fetch(`/join_clique/${cliqueId}`, { method: 'POST' })
+            return fetch(`/clique/join_clique/${cliqueId}`, { method: 'POST' })
               .then((res) => res.json())
               .then((data) => {
                 alert(data.message || 'Joined!');
-                return fetch(`/delete_notification/${notifId}`, { method: 'POST' });
+                return fetch(`/api/notif/delete_notification/${notifId}`, { method: 'POST' });
               })
               .then(() => {
                 location.reload(); // Reload the page to show the new clique on the map
@@ -27,11 +27,11 @@ function attachNotificationHandlers() {
           }
 
           if (type === 'invitation protected') {
-            return fetch(`/request_join_protected/${cliqueId}`, { method: 'POST' })
+            return fetch(`/clique/request_join_protected/${cliqueId}`, { method: 'POST' })
               .then((res) => res.json())
               .then((data) => {
                 alert(data.message || 'Request sent to admin.');
-                return fetch(`/delete_notification/${notifId}`, { method: 'POST' });
+                return fetch(`/api/notif/delete_notification/${notifId}`, { method: 'POST' });
               });
           }
 
@@ -57,7 +57,7 @@ function attachNotificationHandlers() {
       const confirmed = confirm('Are you sure you want to decline this request?');
       if (!confirmed) return;
 
-      fetch(`/delete_notification/${notifId}`, { method: 'POST' }).then(() => {
+      fetch(`/api/notif/delete_notification/${notifId}`, { method: 'POST' }).then(() => {
         button.closest('.notification-item').remove();
         if (document.querySelectorAll('.notification-item').length === 0) {
           refreshNotificationList();
@@ -71,7 +71,7 @@ function attachNotificationHandlers() {
       const notifId = button.getAttribute('data-id');
       const cliqueId = button.getAttribute('data-clique');
 
-      fetch(`/accept_request/${notifId}/${cliqueId}`, { method: 'POST' })
+      fetch(`/clique/accept_request/${notifId}/${cliqueId}`, { method: 'POST' })
         .then((res) => res.json())
         .then((data) => {
           alert(data.message || 'Request accepted.');
@@ -87,7 +87,7 @@ function attachNotificationHandlers() {
     button.addEventListener('click', () => {
       const notifId = button.getAttribute('data-id');
 
-      fetch(`/delete_notification/${notifId}`, { method: 'POST' }).then(() => {
+      fetch(`/api/notif/delete_notification/${notifId}`, { method: 'POST' }).then(() => {
         button.closest('.notification-item').remove();
         if (document.querySelectorAll('.notification-item').length === 0) {
           refreshNotificationList();
@@ -101,11 +101,11 @@ function attachNotificationHandlers() {
       const cliqueId = button.getAttribute('data-clique');
       const notifId = button.getAttribute('data-id');
 
-      fetch(`/request_join_protected/${cliqueId}`, { method: 'POST' })
+      fetch(`/clique/request_join_protected/${cliqueId}`, { method: 'POST' })
         .then((res) => res.json())
         .then((data) => {
           alert(data.message || 'Request sent.');
-          return fetch(`/delete_notification/${notifId}`, { method: 'POST' });
+          return fetch(`/api/notif/delete_notification/${notifId}`, { method: 'POST' });
         })
         .then(() => {
           button.closest('.notification-item').remove();
@@ -119,7 +119,7 @@ function attachNotificationHandlers() {
 
 function refreshNotificationList() {
   const list = document.getElementById('notifications-list');
-  fetch('/get_notifications')
+  fetch('/api/notif/get_notifications')
     .then((res) => res.json())
     .then((data) => {
       list.innerHTML = '';
@@ -211,10 +211,10 @@ function refreshNotificationList() {
           item.innerHTML = `
             ${text}
             <div class="notification-actions">
-              <form method="POST" action="/accept_admin_invite/${notif.id}/${cliqueId}" style="display: inline;">
+              <form method="POST" action="/clique/accept_admin_invite/${notif.id}/${cliqueId}" style="display: inline;">
                 <button class="btn btn-sm btn-success">Accept</button>
               </form>
-              <form method="POST" action="/decline_admin_invite/${notif.id}" style="display: inline;">
+              <form method="POST" action="/clique/decline_admin_invite/${notif.id}" style="display: inline;">
                 <button class="btn btn-sm btn-secondary">Decline</button>
               </form>
             </div>

@@ -22,11 +22,25 @@ def create_app(test_config=None):
     db.init_app(app)
     login_manager.init_app(app)
 
-    login_manager.login_view = "main.login"
+    login_manager.login_view = "auth.login"
     login_manager.login_message_category = "info"
 
-    from app.routes import main_bp
+    from app.auth import auth_bp
+    from app.clique import clique_bp
+    from app.event import event_bp
+    from app.main import main_bp
+    from app.map import map_bp
+    from app.master import master_bp
+    from app.notif import notif_bp
+    from app.user import user_bp
 
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(master_bp)
+    app.register_blueprint(notif_bp)
+    app.register_blueprint(map_bp)
+    app.register_blueprint(event_bp)
+    app.register_blueprint(clique_bp)
+    app.register_blueprint(user_bp)
     app.register_blueprint(main_bp)
 
     return app

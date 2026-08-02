@@ -1,4 +1,4 @@
-{% extends "user/userbase.html" %} 
+{% extends "layouts/userbase.html" %} 
 
 {% block head %}
 <title>{{ user.name }}'s Reviewed Markers</title>
@@ -27,16 +27,14 @@
       pointToLayer: function (feature, latlng) {
         const title = feature.properties.marker_title;
         const created = feature.properties.is_creator;
-        const events = feature.properties.events;
+        const stars = '★'.repeat(feature.properties.stars);
+        const commentary = feature.properties.commentary;
 
         let popupContent = `<div style="font-family: 'Poppins', sans-serif; word-break: break-word;"><strong>${title}</strong>`;
         if (created) popupContent += `<br><em>(created by this user)</em>`;
-        if (events.length) {
-            popupContent += `<hr><div><strong>🗓️ Events:</strong></div>`;
-            events.forEach(e => {
-              popupContent += `<div style="margin-top: 4px;"><strong>${e.user}</strong>: ${e.description} (${e.date} ${e.time})</div></div>`;
-            });
-          }
+        popupContent += `<hr><div><strong>📝 Review: </strong><span style="color: gold;">${stars}</span></div>`;
+        popupContent += ``;
+        if (commentary) popupContent += `<br><em>${commentary}</em></div>`;
 
         return L.marker(latlng).bindPopup(popupContent);
       }
