@@ -90,7 +90,7 @@ def create_clique():
 
         return redirect(url_for("map.maptest"))
 
-    return render_template("user/create_clique.html", name=current_user.name, logged_in=True)
+    return render_template("clique/create_clique.html", name=current_user.name, logged_in=True)
 
 
 @clique_bp.route("/send_invite", methods=["POST"])
@@ -222,7 +222,7 @@ def search_cliques():
     user_clique_ids = {cu.clique_id for cu in current_user.cliques}
 
     return render_template(
-        "user/search_results.html",
+        "clique/search_results.html",
         query=query,
         results=sorted_cliques,
         admin_map=admin_map,
@@ -396,7 +396,7 @@ def admin_control_room(clique_id):
     reviews_series = [reviews_by.get(label, 0) for label in labels]
 
     return render_template(
-        "user/admin_control_room.html",
+        "clique/admin_control_room.html",
         clique=clique,
         admin_user=admin_user,
         admin_review_count=admin_review_count,
@@ -529,7 +529,7 @@ def user_reviews_map(user_id, clique_id):
         )
 
     return render_template(
-        "user/user_reviews_map.html",
+        "clique/user_reviews_map.html",
         user=user,
         features=features,
         logged_in=True,
@@ -581,7 +581,7 @@ def user_events_map(user_id, clique_id):
         )
 
     return render_template(
-        "user/user_events_map.html",
+        "clique/user_events_map.html",
         user=user,
         features=features,
         logged_in=True,
