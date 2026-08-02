@@ -15,7 +15,7 @@ function attachNotificationHandlers() {
 
           if (type === 'invitation' || type === 'invitation admin') {
             // Direct join
-            return fetch(`/join_clique/${cliqueId}`, { method: 'POST' })
+            return fetch(`/clique/join_clique/${cliqueId}`, { method: 'POST' })
               .then((res) => res.json())
               .then((data) => {
                 alert(data.message || 'Joined!');
@@ -27,7 +27,7 @@ function attachNotificationHandlers() {
           }
 
           if (type === 'invitation protected') {
-            return fetch(`/request_join_protected/${cliqueId}`, { method: 'POST' })
+            return fetch(`/clique/request_join_protected/${cliqueId}`, { method: 'POST' })
               .then((res) => res.json())
               .then((data) => {
                 alert(data.message || 'Request sent to admin.');
@@ -71,7 +71,7 @@ function attachNotificationHandlers() {
       const notifId = button.getAttribute('data-id');
       const cliqueId = button.getAttribute('data-clique');
 
-      fetch(`/accept_request/${notifId}/${cliqueId}`, { method: 'POST' })
+      fetch(`/clique/accept_request/${notifId}/${cliqueId}`, { method: 'POST' })
         .then((res) => res.json())
         .then((data) => {
           alert(data.message || 'Request accepted.');
@@ -101,7 +101,7 @@ function attachNotificationHandlers() {
       const cliqueId = button.getAttribute('data-clique');
       const notifId = button.getAttribute('data-id');
 
-      fetch(`/request_join_protected/${cliqueId}`, { method: 'POST' })
+      fetch(`/clique/request_join_protected/${cliqueId}`, { method: 'POST' })
         .then((res) => res.json())
         .then((data) => {
           alert(data.message || 'Request sent.');
@@ -211,10 +211,10 @@ function refreshNotificationList() {
           item.innerHTML = `
             ${text}
             <div class="notification-actions">
-              <form method="POST" action="/accept_admin_invite/${notif.id}/${cliqueId}" style="display: inline;">
+              <form method="POST" action="/clique/accept_admin_invite/${notif.id}/${cliqueId}" style="display: inline;">
                 <button class="btn btn-sm btn-success">Accept</button>
               </form>
-              <form method="POST" action="/decline_admin_invite/${notif.id}" style="display: inline;">
+              <form method="POST" action="/clique/decline_admin_invite/${notif.id}" style="display: inline;">
                 <button class="btn btn-sm btn-secondary">Decline</button>
               </form>
             </div>

@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <form id="update_visibility" method="POST" action="{{ url_for('main.update_clique_type', clique_id=clique.id) }}">
+    <form id="update_visibility" method="POST" action="{{ url_for('clique.update_clique_type', clique_id=clique.id) }}">
       <label for="visibility">Clique Visibility:</label>
       <select name="visibility" id="visibility" class="form-select">
         <option value="Private" {% if clique.visibility == "Private" %}selected{% endif %}>Private</option>
@@ -41,7 +41,7 @@
           </div>
 
           <div class="modal-body">
-            <form id="iconForm" method="POST" action="{{ url_for('main.update_icon', clique_id=clique.id) }}">
+            <form id="iconForm" method="POST" action="{{ url_for('clique.update_icon', clique_id=clique.id) }}">
               <div class="form-group">
                 <label class="form-label">
                   Currently Selected Icon: <i id="selectedIconLabel" class="bi bi-star-fill" style="font-size: 24px"></i>
@@ -361,9 +361,9 @@
 
               <td>
                 <div class="d-flex flex-column align-items-center gap-1">
-                  <a href="{{ url_for('main.user_reviews_map', user_id=user.id, clique_id=clique.id) }}" class="btn btn-sm btn-outline-secondary"
+                  <a href="{{ url_for('clique.user_reviews_map', user_id=user.id, clique_id=clique.id) }}" class="btn btn-sm btn-outline-secondary"
                     ><i class="bi bi-chat-square-text"></i> All Reviews</a>
-                  <a href="{{ url_for('main.user_events_map', user_id=user.id, clique_id=clique.id) }}" class="btn btn-sm btn-outline-secondary"
+                  <a href="{{ url_for('clique.user_events_map', user_id=user.id, clique_id=clique.id) }}" class="btn btn-sm btn-outline-secondary"
                     ><i class="bi bi-calendar-event"></i> All Events</a>
                 </div>
               </td>
@@ -371,7 +371,7 @@
               <td>
                 <div class="action-buttons d-flex flex-column align-items-center" style="gap: 6px">
                   <form
-                    action="{{ url_for('main.kick_user', clique_id=clique.id, user_id=user.id) }}" method="POST"
+                    action="{{ url_for('clique.kick_user', clique_id=clique.id, user_id=user.id) }}" method="POST"
                     onsubmit="
                       return confirm(
                         'Kicking the user will remove them from the clique and delete all their reviews and events. If any marker has only their review, it will also be deleted. However, they can rejoin later unless banned. Are you sure?'
@@ -380,7 +380,7 @@
                   </form>
 
                   <form
-                    action="{{ url_for('main.ban_user', clique_id=clique.id, user_id=user.id) }}" method="POST"
+                    action="{{ url_for('clique.ban_user', clique_id=clique.id, user_id=user.id) }}" method="POST"
                     onsubmit="return confirmBanReason(this);">
                     <input type="hidden" name="reason" />
                     <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-person-slash"></i> Ban User</button>
@@ -398,7 +398,7 @@
                   </button>
 
                   <form
-                    action="{{ url_for('main.send_admin_invitation', clique_id=clique.id, user_id=user.id) }}" method="POST"
+                    action="{{ url_for('clique.send_admin_invitation', clique_id=clique.id, user_id=user.id) }}" method="POST"
                     onsubmit="return confirm('Send an admin invitation to this user?');">
                     <button type="submit" class="btn btn-sm btn-info" style="padding: 5px 10px; font-size: 0.9rem; border-radius: 16px">
                       Make Admin Instead
@@ -416,7 +416,7 @@
     {% for user in clique_users %}
       <div class="modal fade" id="reportModal-{{ user.id }}" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
-          <form method="POST" action="{{ url_for('main.report_user') }}">
+          <form method="POST" action="{{ url_for('clique.report_user') }}">
             <input type="hidden" name="user_id" value="{{ user.id }}" />
             <input type="hidden" name="clique_id" value="{{ clique.id }}" />
             <div class="modal-content text-dark">
@@ -480,7 +480,7 @@
                 <td>{{ banned.reason }}</td>
                 <td>
                   <form
-                    action="{{ url_for('main.unban_user', clique_id=clique.id, user_id=banned.user_id) }}" method="POST"
+                    action="{{ url_for('clique.unban_user', clique_id=clique.id, user_id=banned.user_id) }}" method="POST"
                     onsubmit="return confirm('Are you sure you want to unban this user?');">
                     <button type="submit" class="btn btn-sm btn-unban"><i class="bi bi-person-check"></i> Unban</button>
                   </form>
@@ -664,7 +664,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll("form[action='{{ url_for('main.report_user') }}']").forEach((form) => {
+    document.querySelectorAll("form[action='{{ url_for('clique.report_user') }}']").forEach((form) => {
       form.addEventListener('submit', function (e) {
         const checkboxes = form.querySelectorAll("input[type='checkbox'][name='reasons']");
         const atLeastOneChecked = Array.from(checkboxes).some((cb) => cb.checked);

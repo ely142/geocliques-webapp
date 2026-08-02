@@ -7,7 +7,7 @@
 {% block content %}
 <body class="feed-page">
   <div class="container mt-5 pt-4">
-    <form action="{{ url_for('main.search_cliques') }}" method="GET" class="modern-search-bar">
+    <form action="{{ url_for('clique.search_cliques') }}" method="GET" class="modern-search-bar">
       <input type="text" name="query" id="search-input"
         class="form-control search-input" placeholder="Search for cliques by name or description..." required/>
       <button type="submit" class="search-icon-btn" title="Search">
@@ -36,7 +36,7 @@
               <div class="mt-2 mt-auto">
                 <button class="btn btn-primary btn-sm invite-btn" data-clique-id="{{ clique.id }}">Invite</button>
                 {% if clique.status == "admin" %}
-                  <a href="{{ url_for('main.admin_control_room', clique_id=clique.id) }}" class="btn btn-info btn-sm">Admin Control Room</a>
+                  <a href="{{ url_for('clique.admin_control_room', clique_id=clique.id) }}" class="btn btn-info btn-sm">Admin Control Room</a>
                 {% endif %}
               </div>
             </div>
@@ -155,7 +155,7 @@
         const email = prompt('Enter the email of the user to invite:');
 
         if (email && email.trim()) {
-          fetch('/send_invite', {
+          fetch('/clique/send_invite', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email.trim(), clique_id: cliqueId }),

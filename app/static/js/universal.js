@@ -438,7 +438,7 @@ if (document.getElementById('map') && !window.disableUniversalMap) {
 
         <button onclick="saveMarker(${lat}, ${lng}, '${uniqueId}')" class="btn btn-primary-small">Save</button>
         <button onclick="discardMarker()" class="btn btn-secondary">Discard</button>
-        <a href="/create-clique" class="btn btn-info-small">Create New Clique</a>
+        <a href="/clique/create-clique" class="btn btn-info-small">Create New Clique</a>
       </div>
     `;
 

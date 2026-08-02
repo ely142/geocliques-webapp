@@ -143,14 +143,14 @@
                 <td>
                   {% if clique.status == 'admin' %}
                     <form
-                      action="{{ url_for('main.leave_clique', clique_id=clique.id) }}" method="POST"
+                      action="{{ url_for('clique.leave_clique', clique_id=clique.id) }}" method="POST"
                       onsubmit="return confirm('Are you sure you want to leave this clique?');">
                       <button type="submit" class="btn btn-sm btn-outline-danger mb-2">Leave</button>
                     </form>
-                  <a href="{{ url_for('main.admin_control_room', clique_id=clique.id) }}" class="btn btn-sm btn-secondary">Admin Control Room</a>
+                  <a href="{{ url_for('clique.admin_control_room', clique_id=clique.id) }}" class="btn btn-sm btn-secondary">Admin Control Room</a>
                   {% else %}
                     <form
-                      action="{{ url_for('main.leave_clique', clique_id=clique.id) }}" method="POST"
+                      action="{{ url_for('clique.leave_clique', clique_id=clique.id) }}" method="POST"
                       onsubmit="return confirm('Are you sure you want to leave this clique?');">
                       <button type="submit" class="btn btn-sm btn-outline-danger">Leave</button>
                     </form>
