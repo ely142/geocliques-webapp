@@ -90,6 +90,9 @@ FLASK_APP=run.py
 FLASK_DEBUG=1
 SECRET_KEY="your_super_secret_key_here"
 DATABASE_URL="sqlite:///users.db" # Optional: Defaults to this SQLite path if left blank
+
+# Optional: Third-Party Integrations
+MAP_THUNDERFOREST_KEY="your_api_key_here" # Enables Thunderforest map tile layers
 ```
 ### 5. Run the Application
 
@@ -120,30 +123,35 @@ pytest -v
 geocliques-webapp/
 ├── app/                     # Core application package
 │   ├── __init__.py          # Application Factory & Blueprint registration
-│   ├── static/              # Frontend web assets
-│   │   ├── css/             # Stylesheets
-│   │   ├── assets/          # Static media & default avatars
-│   │   └── js/              # Interactive UI logic
-│   ├── templates/           # Jinja2 HTML templates
-│   │   ├── master/          # Platform management dashboard
-│   │   ├── user/            # Public-facing views
-│   │   ├── base.html        # Master layout wrapper
-│   │   ├── index.html       # Public landing page
-│   │   ├── login.html       # Authentication: Login
-│   │   ├── register.html    # Authentication: Registration
-│   │   └── userguide.html   # User documentation & help
-│   ├── models.py            # SQLAlchemy ORM models
 │   ├── extensions.py        # Decoupled Flask extensions (db, login_manager)
-│   ├── routes.py            # Core endpoint routing logic
-│   └── utils.py             # Shared helper functions
+│   ├── models.py            # SQLAlchemy ORM models
+│   ├── utils.py             # Shared helper functions
+│   ├── static/              # Frontend web assets (css, js, assets)
+│   ├── templates/           # Domain-isolated HTML templates
+│   │   ├── layout/          # Shared structural wrappers (e.g., base.html)
+│   │   ├── auth/            # Authentication presentation layer
+│   │   ├── map/             # Mapping presentation layer
+│   │   └── .../             # Additional namespaces (mirrors blueprint packages)
+│   │ 
+│   # --- Blueprint Packages ---
+│   ├── auth/                # Authentication
+│   ├── clique/              # Clique management & admin controls
+│   ├── event/               # Event processing
+│   ├── main/                # Core routing (index, root, feed)
+│   ├── map/                 # Map visualization, markers, and reviews
+│   ├── master/              # Developer platform management dashboard
+│   ├── notif/               # System notifications
+│   └── user/                # User profile & settings
+│                            # Note: All blueprint directories contain a standard 
+│                            # __init__.py (registration) and routes.py (endpoints)
 ├── instance/                # Local SQLite database (gitignored)
+├── tests/                   # Pytest testing suite
+│   ├── conftest.py          # Test fixtures & isolated in-memory SQLite setup
+│   └── test_*.py            # Domain-specific route and logic verification
 ├── run.py                   # Application entry point & context initialization
 ├── .env                     # Environment variables (gitignored)
 ├── requirements.txt         # Python dependencies
 ├── pyproject.toml           # Linter configuration
-├── tests/                   # Pytest testing suite
-│   ├── conftest.py          # Test fixtures & isolated in-memory SQLite setup
-│   └── test_routes.py       # Blueprint & App Factory route verification
 ├── pytest.ini               # Pytest execution configuration
 ├── .gitignore               # Untracked files and directories
 └── README.md                # Project documentation
@@ -151,7 +159,7 @@ geocliques-webapp/
 
 ## ⚙️ Architecture & Technical Decisions
 
-* **Application Factory Architecture:** Core application instantiation is handled via a Flask Application Factory pattern to eliminate circular dependencies. By decoupling the routing logic into a primary Blueprint, a modular foundation is established that natively supports the separation of concerns through domain-specific Blueprints.
+* **Application Factory Architecture:** Core application instantiation is handled via a Flask Application Factory pattern to eliminate circular dependencies. Routing and state logic are decoupled into isolated domain Blueprints, establishing a modular foundation that supports separation of concerns. Additionally, UI templates are domain-namespaced to mirror this structure, while being maintained in a centralized directory to preserve clean inheritance and shared layouts.
 
 * **Internal Developer Tooling:** A protected administrative dashboard was implemented to decouple internal platform operations from the user-facing web app, providing developers with a secure GUI for data management and content moderation without requiring direct database access.
 
