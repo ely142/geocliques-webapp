@@ -90,6 +90,9 @@ FLASK_APP=run.py
 FLASK_DEBUG=1
 SECRET_KEY="your_super_secret_key_here"
 DATABASE_URL="sqlite:///users.db" # Optional: Defaults to this SQLite path if left blank
+
+# Optional: Third-Party Integrations
+MAP_THUNDERFOREST_KEY="your_api_key_here" # Enables Thunderforest map tile layers
 ```
 ### 5. Run the Application
 
