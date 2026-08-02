@@ -17,12 +17,12 @@ from app.models import (
 
 @main_bp.route("/")
 def home():
-    return render_template("index.html", logged_in=current_user.is_authenticated, show_auth_links=True)
+    return render_template("main/index.html", logged_in=current_user.is_authenticated, show_auth_links=True)
 
 
 @main_bp.route("/user_guide", methods=["GET"])
 def user_guide():
-    return render_template("user_guide.html", logged_in=False)
+    return render_template("main/user_guide.html", logged_in=False)
 
 
 @main_bp.route("/feed")
@@ -135,7 +135,7 @@ def feed():
         scoreboard_data.append({"clique_name": clique.name, "ranking": ranking})
 
     return render_template(
-        "user/feed.html",
+        "main/feed.html",
         name=current_user.name,
         logged_in=True,
         cliques=user_cliques,
