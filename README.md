@@ -123,30 +123,35 @@ pytest -v
 geocliques-webapp/
 ├── app/                     # Core application package
 │   ├── __init__.py          # Application Factory & Blueprint registration
-│   ├── static/              # Frontend web assets
-│   │   ├── css/             # Stylesheets
-│   │   ├── assets/          # Static media & default avatars
-│   │   └── js/              # Interactive UI logic
-│   ├── templates/           # Jinja2 HTML templates
-│   │   ├── master/          # Platform management dashboard
-│   │   ├── user/            # Public-facing views
-│   │   ├── base.html        # Master layout wrapper
-│   │   ├── index.html       # Public landing page
-│   │   ├── login.html       # Authentication: Login
-│   │   ├── register.html    # Authentication: Registration
-│   │   └── userguide.html   # User documentation & help
-│   ├── models.py            # SQLAlchemy ORM models
 │   ├── extensions.py        # Decoupled Flask extensions (db, login_manager)
-│   ├── routes.py            # Core endpoint routing logic
-│   └── utils.py             # Shared helper functions
+│   ├── models.py            # SQLAlchemy ORM models
+│   ├── utils.py             # Shared helper functions
+│   ├── static/              # Frontend web assets (css, js, assets)
+│   ├── templates/           # Domain-isolated HTML templates
+│   │   ├── layout/          # Shared structural wrappers (e.g., base.html)
+│   │   ├── auth/            # Authentication presentation layer
+│   │   ├── map/             # Mapping presentation layer
+│   │   └── .../             # Additional namespaces (mirrors blueprint packages)
+│   │ 
+│   # --- Blueprint Packages ---
+│   ├── auth/                # Authentication
+│   ├── clique/              # Clique management & admin controls
+│   ├── event/               # Event processing
+│   ├── main/                # Core routing (index, root, feed)
+│   ├── map/                 # Map visualization, markers, and reviews
+│   ├── master/              # Developer platform management dashboard
+│   ├── notif/               # System notifications
+│   └── user/                # User profile & settings
+│                            # Note: All blueprint directories contain a standard 
+│                            # __init__.py (registration) and routes.py (endpoints)
 ├── instance/                # Local SQLite database (gitignored)
+├── tests/                   # Pytest testing suite
+│   ├── conftest.py          # Test fixtures & isolated in-memory SQLite setup
+│   └── test_*.py            # Domain-specific route and logic verification
 ├── run.py                   # Application entry point & context initialization
 ├── .env                     # Environment variables (gitignored)
 ├── requirements.txt         # Python dependencies
 ├── pyproject.toml           # Linter configuration
-├── tests/                   # Pytest testing suite
-│   ├── conftest.py          # Test fixtures & isolated in-memory SQLite setup
-│   └── test_routes.py       # Blueprint & App Factory route verification
 ├── pytest.ini               # Pytest execution configuration
 ├── .gitignore               # Untracked files and directories
 └── README.md                # Project documentation
