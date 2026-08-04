@@ -54,7 +54,7 @@ def feed():
         marker_updates.append(
             {
                 "type": "marker",
-                "date": um.creation_date,
+                "date": um.creation_date.isoformat() if um.creation_date else "Unknown",
                 "clique_name": db.session.get(Clique, um.clique_id).name,
                 "marker_name": um.marker.description or "Unnamed Marker",
                 "description": um.marker.description or "",
@@ -78,7 +78,7 @@ def feed():
         review_updates.append(
             {
                 "type": "review",
-                "date": r.creation_date,
+                "date": r.creation_date.isoformat() if r.creation_date else "Unknown",
                 "clique_name": clique.name,
                 "marker_name": marker.description or "Unnamed Marker",
                 "stars": r.stars,

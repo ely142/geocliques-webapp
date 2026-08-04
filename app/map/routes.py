@@ -155,7 +155,6 @@ def add_marker():
             user_id=current_user.id,
             marker_id=new_marker.id,
             clique_id=clique_id,
-            creation_date=datetime.today().strftime("%Y-%m-%d"),
         )
         db.session.add(user_marker)
 
@@ -164,7 +163,6 @@ def add_marker():
             commentary=commentary,
             marker_id=new_marker.id,
             user_id=current_user.id,
-            creation_date=datetime.today().strftime("%Y-%m-%d"),
         )
         db.session.add(new_review)
 
@@ -200,7 +198,6 @@ def rate_marker(marker_id):
         commentary=commentary,
         marker_id=marker_id,
         user_id=current_user.id,
-        creation_date=datetime.today().strftime("%Y-%m-%d"),
     )
     db.session.add(review)
     db.session.commit()

@@ -74,7 +74,6 @@ def create_clique():
             description=description,
             visibility=visibility,
             icon=icon,
-            date_created=datetime.today().strftime("%Y-%m-%d"),
             admin_id=current_user.id,
         )
         db.session.add(new_clique)
@@ -83,7 +82,6 @@ def create_clique():
         membership = CliqueUser(
             user_id=current_user.id,
             clique_id=new_clique.id,
-            joined_date=datetime.today().strftime("%Y-%m-%d"),
         )
         db.session.add(membership)
         db.session.commit()
@@ -173,7 +171,6 @@ def join_clique(clique_id):
     new_link = CliqueUser(
         user_id=current_user.id,
         clique_id=clique_id,
-        joined_date=datetime.today().strftime("%Y-%m-%d"),
     )
     db.session.add(new_link)
     db.session.commit()
@@ -271,7 +268,7 @@ def accept_request(note_id, clique_id):
         return jsonify({"success": False, "message": "Only the admin can accept join requests."}), 403
 
     user = db.session.get(User, note.user_id)
-    new_link = CliqueUser(user_id=user.id, clique_id=clique_id, joined_date=datetime.today().strftime("%Y-%m-%d"))
+    new_link = CliqueUser(user_id=user.id, clique_id=clique_id)
     db.session.add(new_link)
     db.session.delete(note)
 
@@ -334,7 +331,7 @@ def admin_control_room(clique_id):
                 {
                     "user_id": b.user_id,
                     "name": user.name,
-                    "ban_date": b.ban_date,
+                    "ban_date": b.ban_date.isoformat() if b.ban_date else "Unknown",
                     "reason": b.reason,
                 }
             )
@@ -451,7 +448,6 @@ def ban_user(clique_id, user_id):
             user_id=user_id,
             clique_id=clique_id,
             reason=reason,
-            ban_date=datetime.today().strftime("%Y-%m-%d"),
         )
     )
     db.session.add(Notification(type="ban", user_id=user_id, clique_id=clique_id))

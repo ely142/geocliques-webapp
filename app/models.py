@@ -30,7 +30,7 @@ class Clique(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
-    description: Mapped[str] = mapped_column(String(200))
+    description: Mapped[Optional[str]] = mapped_column(Text)
     visibility: Mapped[str] = mapped_column(String(200))
     date_created: Mapped[date] = mapped_column(Date, default=date.today)
     admin_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
@@ -128,7 +128,7 @@ class BannedUser(db.Model):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
     clique_id: Mapped[int] = mapped_column(ForeignKey("cliques.id"), primary_key=True)
-    reason: Mapped[str] = mapped_column(String(100), nullable=True)
+    reason: Mapped[Optional[str]] = mapped_column(Text)
     ban_date: Mapped[date] = mapped_column(Date, default=date.today)
 
     user = relationship("User", back_populates="banned_users")
