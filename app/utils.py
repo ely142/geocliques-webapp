@@ -95,10 +95,6 @@ def delete_user(user_id):
     for review in list(user.reviews):
         delete_review_and_update_marker(review.id)
 
-    created_links = UserMarker.query.filter_by(user_id=user.id).all()
-    for link in created_links:
-        link.user_id = -1
-
     admin_cliques = Clique.query.filter_by(admin_id=user.id).all()
     for clique in admin_cliques:
         other_members = (
@@ -111,14 +107,23 @@ def delete_user(user_id):
         else:
             delete_clique_and_contents(clique.id)
 
+    db.session.flush()
+
+    # Transfer orphaned markers to the current active admin
+    created_links = UserMarker.query.filter_by(user_id=user.id).all()
+    for link in created_links:
+        clique = db.session.get(Clique, link.clique_id)
+        if clique:
+            link.user_id = clique.admin_id
+        else:
+            db.session.delete(link)
+
     non_admin_links = CliqueUser.query.filter_by(user_id=user.id).all()
     for link in non_admin_links:
         Event.query.filter_by(clique_id=link.clique_id, user_id=user.id).delete()
         db.session.delete(link)
 
     Event.query.filter_by(user_id=user.id).delete()
-
-    UserMarker.query.filter_by(user_id=user.id).delete()
     Notification.query.filter_by(user_id=user.id).delete()
     BannedUser.query.filter_by(user_id=user.id).delete()
 
@@ -126,6 +131,10 @@ def delete_user(user_id):
 
 
 def delete_user_from_clique(clique_id, user_id):
+    clique = db.session.get(Clique, clique_id)
+    if not clique:
+        return
+
     CliqueUser.query.filter_by(user_id=user_id, clique_id=clique_id).delete()
 
     marker_ids = [um.marker_id for um in UserMarker.query.filter_by(clique_id=clique_id).all()]
@@ -135,6 +144,11 @@ def delete_user_from_clique(clique_id, user_id):
         delete_review_and_update_marker(review.id)
 
     Event.query.filter_by(user_id=user_id, clique_id=clique_id).delete()
+
+    # Admin inheritance
+    abandoned_markers = UserMarker.query.filter_by(user_id=user_id, clique_id=clique_id).all()
+    for um in abandoned_markers:
+        um.user_id = clique.admin_id
 
 
 def perform_leave_clique(clique_id, user_id):
@@ -152,6 +166,7 @@ def perform_leave_clique(clique_id, user_id):
             clique.admin_id = new_admin_id
 
             db.session.add(Notification(type="admin replacement", user_id=new_admin_id, clique_id=clique_id))
+            db.session.flush()
         else:
             delete_clique_and_contents(clique_id)
             return True
