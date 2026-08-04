@@ -342,22 +342,20 @@ def admin_control_room(clique_id):
     time_window = request.args.get("range", "week")
     today = datetime.today()
     if time_window == "month":
-        start_date = today - timedelta(days=30)
+        start_date = (today - timedelta(days=30)).date()
     elif time_window == "year":
-        start_date = today - timedelta(days=365)
+        start_date = (today - timedelta(days=365)).date()
     else:
-        start_date = today - timedelta(days=7)
+        start_date = (today - timedelta(days=7)).date()
 
-    start_date_str = start_date.strftime("%Y-%m-%d")
+    joined_count = CliqueUser.query.filter_by(clique_id=clique_id).filter(CliqueUser.joined_date >= start_date).count()
 
-    joined_count = CliqueUser.query.filter_by(clique_id=clique_id).filter(CliqueUser.joined_date >= start_date_str).count()
-
-    marker_count = UserMarker.query.filter_by(clique_id=clique_id).filter(UserMarker.creation_date >= start_date_str).count()
+    marker_count = UserMarker.query.filter_by(clique_id=clique_id).filter(UserMarker.creation_date >= start_date).count()
 
     review_count = (
         db.session.query(Review)
         .filter(
-            Review.creation_date >= start_date_str,
+            Review.creation_date >= start_date,
             Review.marker_id.in_(db.session.query(UserMarker.marker_id).filter_by(clique_id=clique_id).distinct()),
         )
         .count()
@@ -367,20 +365,27 @@ def admin_control_room(clique_id):
         today = datetime.today()
         labels = [str(today.year - i) for i in range(2, -1, -1)]
 
-        def extract(date_str):
-            return date_str[:4]
+        def extract(date_obj):
+            if not date_obj:
+                return "Unknown"
+            return date_obj.strftime("%Y")
+
     elif time_window == "month":
         today = datetime.today().replace(day=1)
         labels = [(today - timedelta(days=30 * i)).strftime("%Y-%m") for i in range(11, -1, -1)]
 
-        def extract(date_str):
-            return date_str[:7]
+        def extract(date_obj):
+            if not date_obj:
+                return "Unknown"
+            return date_obj.strftime("%Y-%m")
     else:
         today = datetime.today().date()
         labels = [(today - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(6, -1, -1)]
 
-        def extract(date_str):
-            return date_str
+        def extract(date_obj):
+            if not date_obj:
+                return "Unknown"
+            return date_obj.strftime("%Y-%m-%d")
 
     members = CliqueUser.query.filter_by(clique_id=clique_id).all()
     markers = UserMarker.query.filter_by(clique_id=clique_id).all()
@@ -558,8 +563,8 @@ def user_events_map(user_id, clique_id):
 
         events_data = [
             {
-                "date": e.date,
-                "time": e.time,
+                "date": e.date.isoformat(),
+                "time": e.time.strftime("%H:%M"),
                 "description": e.description,
                 "user": db.session.get(User, e.user_id).name,
             }

@@ -44,7 +44,7 @@ def feed():
             }
         )
 
-    week_ago = (datetime.today() - timedelta(days=7)).strftime("%Y-%m-%d")
+    week_ago = (datetime.today() - timedelta(days=7)).date()
 
     recent_markers = UserMarker.query.filter(UserMarker.clique_id.in_(user_clique_ids), UserMarker.creation_date >= week_ago).all()
 

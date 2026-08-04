@@ -175,8 +175,8 @@ def get_clique_markers(clique_id):
         events_data = [
             {
                 "user": db.session.get(User, e.user_id).name,
-                "date": e.date,
-                "time": e.time,
+                "date": e.date.isoformat(),
+                "time": e.time.strftime("%H:%M"),
                 "description": e.description,
             }
             for e in all_events

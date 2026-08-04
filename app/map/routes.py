@@ -73,14 +73,17 @@ def get_user_markers():
 
         # Current user events
         all_user_events = Event.query.filter_by(marker_id=marker.id, user_id=current_user.id).all()
-        user_events = [{"date": e.date, "time": e.time, "description": e.description, "is_own_event": True} for e in all_user_events]
+        user_events = [
+            {"date": e.date.isoformat(), "time": e.time.strftime("%H:%M"), "description": e.description, "is_own_event": True}
+            for e in all_user_events
+        ]
 
         # Peer events
         all_events = Event.query.filter(Event.marker_id == marker.id, Event.user_id != current_user.id).all()
         other_events = [
             {
-                "date": e.date,
-                "time": e.time,
+                "date": e.date.isoformat(),
+                "time": e.time.strftime("%H:%M"),
                 "description": e.description,
                 "user": db.session.get(User, e.user_id).name,
                 "user_pic": db.session.get(User, e.user_id).picture,
