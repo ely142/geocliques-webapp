@@ -221,7 +221,7 @@ function refreshNotificationList() {
           `;
         } else if (type === 'admin replacement') {
           item.innerHTML = `
-            <div>You have been made the admin of <strong>${cliqueName}</strong> because the previous admin deleted their account.</div>
+            <div>You have been made the admin of <strong>${cliqueName}</strong> because the previous admin left the clique.</div>
             <div class="notification-actions">
               <button class="btn btn-sm btn-secondary ignore-btn" data-id="${notif.id}">Okay</button>
             </div>
