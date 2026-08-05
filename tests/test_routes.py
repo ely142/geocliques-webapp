@@ -1,3 +1,5 @@
+from datetime import date, time
+
 import pytest
 
 from app.extensions import db
@@ -90,8 +92,8 @@ def test_update_event_dynamic_redirect(app, client, map_db_setup, origin_route, 
 
     with app.app_context():
         fake_event = Event(
-            date="2026-07-03",
-            time="10:00",
+            date=date(2027, 7, 3),
+            time=time(10, 0),
             description="Test Event",
             marker_id=map_db_setup["marker_id"],
             user_id=map_db_setup["user_id"],
@@ -106,7 +108,7 @@ def test_update_event_dynamic_redirect(app, client, map_db_setup, origin_route, 
 
     response = client.post(
         f"/event/update/{event_id}",
-        data={"action": form_action, "next": origin_route, "date": "2026-07-04", "time": "12:00", "description": "Updated event description"},
+        data={"action": form_action, "next": origin_route, "date": "2027-07-04", "time": "12:00", "description": "Updated event description"},
     )
 
     assert response.status_code == 302
