@@ -186,7 +186,9 @@ geocliques-webapp/
 
 * **Client-Side State Management:** Map marker filtering by clique is handled natively on the frontend via Leaflet's `L.geoJSON`. By transferring the full data payload to the browser, redundant database queries are eliminated, resulting in instantaneous UI updates via local DOM manipulation.
 
-* **Explicit Database Associations:** Complex ternary relationships (e.g., User, Marker, Clique) are managed via a normalized SQLAlchemy schema using explicit association models. This allows contextual metadata to be stored directly on the join models, enabling highly efficient querying while eliminating complex multi-table joins.
+* **Relational Database Architecture:** Core persistence utilizes containerized PostgreSQL 17 to enforce type strictness and establish dev/prod parity. Complex ternary relationships (e.g., User, Marker, Clique) are managed via normalized SQLAlchemy association models, storing contextual metadata directly on join tables to optimize query execution.
+
+* **Referential Integrity & Cascades:** To preserve community-shared location data when a user departs, programmatic deletion cascades enforce strict referential integrity without relying on anti-patterns like ghost user IDs. During account deletion or clique detachment, orphaned map markers are dynamically reassigned to the active clique admin via an admin inheritance pattern. Conversely, markers solely reviewed by the departing user are explicitly purged to prevent fragmentation.
 
 ## 🚧 Development Roadmap
 This repository serves as a stable, functional baseline. Updates are pushed iteratively as new architectural patterns are evaluated.
