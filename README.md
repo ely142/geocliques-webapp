@@ -2,6 +2,8 @@
 
 ![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)
 ![Flask](https://img.shields.io/badge/Flask-3.x-black?logo=flask)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)
 ![Leaflet](https://img.shields.io/badge/Leaflet-Maps-green?logo=leaflet)
 
 **GeoCliques** is a social, map-based web application where users can create and join "cliques" (groups), place markers on a map, leave reviews and events, and collaborate in a dynamic geospatial environment. The app includes user authentication, interactive mapping with custom icons, notifications, multi-layer map support, and full admin control over user content.
@@ -44,14 +46,20 @@ This platform bridges that gap by providing a dedicated, map-based hub built spe
 
 * **Backend:** Flask (App Factory, Blueprints) & SQLAlchemy 2.0 (ORM)
 * **Frontend:** Vanilla JavaScript, Bootstrap & Jinja2 (Server-side rendering)
-* **Database:** PostgreSQL (Production) & SQLite (Local sandbox)
+* **Database:** PostgreSQL 17 (via Docker Compose)
 * **Mapping Engine:** Leaflet.js (Open-source interactive maps)
 * **Security & Search:** Werkzeug (Cryptographic hashing) & RapidFuzz (Fuzzy string matching)
 * **Testing:** Pytest (In-memory SQLite isolation)
 
 ## 🚀 Getting Started
 
-Follow these steps to set up and run the project locally.
+### Prerequisites
+Ensure the following are installed on the host system:
+* **Python**: `v3.10+` *(verified on v3.12.3)*
+* **Docker Engine**: `v20.10+` *(verified on v29.6.1)*
+* **Docker Compose**: `v2.0+` *(verified on v5.3.0)*
+
+---
 
 ### 1. Clone the Repository
 ```bash
@@ -80,23 +88,34 @@ pip install -r requirements.txt
 ```
 ### 4. Configure Environment Variables
 
-Create a `.env` file in the root directory.
+Create a local `.env` file in the root directory from the provided template.
 
-> 💡Note: The .env file is listed in .gitignore to prevent sensitive keys from being pushed to the repository. You must create this file manually.
-
-Add the following keys to your `.env` file:
+**On WSL / Linux / macOS:**
 ```bash
-FLASK_APP=run.py
-FLASK_DEBUG=1
-SECRET_KEY="your_super_secret_key_here"
-DATABASE_URL="sqlite:///users.db" # Optional: Defaults to this SQLite path if left blank
-
-# Optional: Third-Party Integrations
-MAP_THUNDERFOREST_KEY="your_api_key_here" # Enables Thunderforest map tile layers
+cp .env.example .env
 ```
-### 5. Run the Application
 
-Execute `run.py` to start the server. This entry point establishes the Application Factory context, automatically generating the local SQLite database and its tables on the first run.
+**On Windows:**
+```bash
+copy .env.example .env
+```
+
+> 💡Note: The .env file is git-ignored. Update it with your local credentials. Both Docker and Flask strictly require this file to boot successfully.
+
+### 5. Boot Database Infrastructure
+Start the PostgreSQL container. Docker provisions the database using the variables defined in `.env`.
+```bash
+docker compose up -d
+```
+
+Verify the database service is healthy and accepting connections before proceeding:
+```bash
+docker compose ps
+```
+
+### 6. Run the Application
+
+Execute `run.py` to start the server. This entry point establishes the Application Factory context and connects to the running PostgreSQL database.
 
 **On WSL / Linux / macOS:**
 ```bash
@@ -107,7 +126,7 @@ python3 run.py
 ```bash
 python run.py
 ```
-The application will now be running on http://127.0.0.1:5000.
+The application will now be running on http://127.0.0.1:5000. 
 
 ## 🧪 Testing
 
@@ -149,8 +168,10 @@ geocliques-webapp/
 │   ├── conftest.py          # Test fixtures & isolated in-memory SQLite setup
 │   └── test_*.py            # Domain-specific route and logic verification
 ├── run.py                   # Application entry point & context initialization
+├── .env.example             # Environment variable template
 ├── .env                     # Environment variables (gitignored)
 ├── requirements.txt         # Python dependencies
+├── compose.yaml             # Local Docker infrastructure configuration
 ├── pyproject.toml           # Linter configuration
 ├── pytest.ini               # Pytest execution configuration
 ├── .gitignore               # Untracked files and directories
@@ -165,7 +186,9 @@ geocliques-webapp/
 
 * **Client-Side State Management:** Map marker filtering by clique is handled natively on the frontend via Leaflet's `L.geoJSON`. By transferring the full data payload to the browser, redundant database queries are eliminated, resulting in instantaneous UI updates via local DOM manipulation.
 
-* **Explicit Database Associations:** Complex ternary relationships (e.g., User, Marker, Clique) are managed via a normalized SQLAlchemy schema using explicit association models. This allows contextual metadata to be stored directly on the join models, enabling highly efficient querying while eliminating complex multi-table joins.
+* **Relational Database Architecture:** Core persistence utilizes containerized PostgreSQL 17 to enforce type strictness and establish dev/prod parity. Complex ternary relationships (e.g., User, Marker, Clique) are managed via normalized SQLAlchemy association models, storing contextual metadata directly on join tables to optimize query execution.
+
+* **Referential Integrity & Cascades:** To preserve community-shared location data when a user departs, programmatic deletion cascades enforce strict referential integrity without relying on anti-patterns like ghost user IDs. During account deletion or clique detachment, orphaned map markers are dynamically reassigned to the active clique admin via an admin inheritance pattern. Conversely, markers solely reviewed by the departing user are explicitly purged to prevent fragmentation.
 
 ## 🚧 Development Roadmap
 This repository serves as a stable, functional baseline. Updates are pushed iteratively as new architectural patterns are evaluated.
@@ -173,6 +196,5 @@ This repository serves as a stable, functional baseline. Updates are pushed iter
 **Active areas of exploration:**
 * **Query Optimization:** Refactoring ORM queries to resolve N+1 bottlenecks and speed up data retrieval.
 * **AI Integration:** Integrating AI capabilities for intelligent platform features.
-* **Database Scaling:** Migrating infrastructure from SQLite to PostgreSQL.
 * **Map Infrastructure:** Transitioning to keyless, open-source map tile providers.
 * **Code Quality:** Enforcing strict Python type-safety and modern linting.
