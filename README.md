@@ -2,6 +2,8 @@
 
 ![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)
 ![Flask](https://img.shields.io/badge/Flask-3.x-black?logo=flask)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)
 ![Leaflet](https://img.shields.io/badge/Leaflet-Maps-green?logo=leaflet)
 
 **GeoCliques** is a social, map-based web application where users can create and join "cliques" (groups), place markers on a map, leave reviews and events, and collaborate in a dynamic geospatial environment. The app includes user authentication, interactive mapping with custom icons, notifications, multi-layer map support, and full admin control over user content.
@@ -166,8 +168,10 @@ geocliques-webapp/
 │   ├── conftest.py          # Test fixtures & isolated in-memory SQLite setup
 │   └── test_*.py            # Domain-specific route and logic verification
 ├── run.py                   # Application entry point & context initialization
+├── .env.example             # Environment variable template
 ├── .env                     # Environment variables (gitignored)
 ├── requirements.txt         # Python dependencies
+├── compose.yaml             # Local Docker infrastructure configuration
 ├── pyproject.toml           # Linter configuration
 ├── pytest.ini               # Pytest execution configuration
 ├── .gitignore               # Untracked files and directories
