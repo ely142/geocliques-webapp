@@ -44,7 +44,7 @@ This platform bridges that gap by providing a dedicated, map-based hub built spe
 
 * **Backend:** Flask (App Factory, Blueprints) & SQLAlchemy 2.0 (ORM)
 * **Frontend:** Vanilla JavaScript, Bootstrap & Jinja2 (Server-side rendering)
-* **Database:** PostgreSQL (Production) & SQLite (Local sandbox)
+* **Database:** PostgreSQL 17 (via Docker Compose)
 * **Mapping Engine:** Leaflet.js (Open-source interactive maps)
 * **Security & Search:** Werkzeug (Cryptographic hashing) & RapidFuzz (Fuzzy string matching)
 * **Testing:** Pytest (In-memory SQLite isolation)
