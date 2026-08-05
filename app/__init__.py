@@ -14,7 +14,13 @@ def create_app(test_config=None):
     os.makedirs(app.instance_path, exist_ok=True)
 
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "fallback-secret")
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///users.db")
+
+    database_url = os.getenv("DATABASE_URL")
+
+    if not database_url:
+        raise ValueError("FATAL: DATABASE_URL environment variable is not set. Please check your .env file.")
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 
     if test_config:
         app.config.update(test_config)
