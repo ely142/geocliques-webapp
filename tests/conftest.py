@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import pytest
 from werkzeug.security import generate_password_hash
 
@@ -45,7 +43,6 @@ def base_db_setup(app):
             name="Test Clique",
             description="Description",
             visibility="private",
-            date_created=datetime.today().strftime("%Y-%m-%d"),
             admin_id=fake_user.id,
             icon="bi-star",
         )
@@ -53,7 +50,7 @@ def base_db_setup(app):
         db.session.add(fake_clique)
         db.session.flush()
 
-        fake_clique_user = CliqueUser(user_id=fake_user.id, clique_id=fake_clique.id, joined_date=datetime.today().strftime("%Y-%m-%d"))
+        fake_clique_user = CliqueUser(user_id=fake_user.id, clique_id=fake_clique.id)
 
         db.session.add(fake_clique_user)
         db.session.commit()

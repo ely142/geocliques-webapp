@@ -73,14 +73,17 @@ def get_user_markers():
 
         # Current user events
         all_user_events = Event.query.filter_by(marker_id=marker.id, user_id=current_user.id).all()
-        user_events = [{"date": e.date, "time": e.time, "description": e.description, "is_own_event": True} for e in all_user_events]
+        user_events = [
+            {"date": e.date.isoformat(), "time": e.time.strftime("%H:%M"), "description": e.description, "is_own_event": True}
+            for e in all_user_events
+        ]
 
         # Peer events
         all_events = Event.query.filter(Event.marker_id == marker.id, Event.user_id != current_user.id).all()
         other_events = [
             {
-                "date": e.date,
-                "time": e.time,
+                "date": e.date.isoformat(),
+                "time": e.time.strftime("%H:%M"),
                 "description": e.description,
                 "user": db.session.get(User, e.user_id).name,
                 "user_pic": db.session.get(User, e.user_id).picture,
@@ -152,7 +155,6 @@ def add_marker():
             user_id=current_user.id,
             marker_id=new_marker.id,
             clique_id=clique_id,
-            creation_date=datetime.today().strftime("%Y-%m-%d"),
         )
         db.session.add(user_marker)
 
@@ -161,7 +163,6 @@ def add_marker():
             commentary=commentary,
             marker_id=new_marker.id,
             user_id=current_user.id,
-            creation_date=datetime.today().strftime("%Y-%m-%d"),
         )
         db.session.add(new_review)
 
@@ -197,7 +198,6 @@ def rate_marker(marker_id):
         commentary=commentary,
         marker_id=marker_id,
         user_id=current_user.id,
-        creation_date=datetime.today().strftime("%Y-%m-%d"),
     )
     db.session.add(review)
     db.session.commit()

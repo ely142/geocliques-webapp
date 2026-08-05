@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from flask import redirect, render_template, request, url_for
 from flask_login import current_user, login_required
@@ -30,16 +30,19 @@ def delete_expired_events():
 @login_required
 def add_event(marker_id, clique_id):
     if request.method == "POST":
-        date = request.form.get("date")
-        time = request.form.get("time")
+        raw_date = request.form.get("date")
+        raw_time = request.form.get("time")
         description = request.form.get("description")
 
-        if not date or not time or not description:
+        if not raw_date or not raw_time or not description:
             return redirect(url_for("event.add_event", marker_id=marker_id, clique_id=clique_id))
 
+        parsed_date = datetime.strptime(raw_date, "%Y-%m-%d").date()
+        parsed_time = datetime.strptime(raw_time[:5], "%H:%M").time()
+
         new_event = Event(
-            date=date,
-            time=time,
+            date=parsed_date,
+            time=parsed_time,
             description=description,
             marker_id=marker_id,
             clique_id=clique_id,
@@ -96,13 +99,17 @@ def update_event(event_id):
                 return redirect(url_for("event.edit_event", marker_id=event.marker_id, clique_id=event.clique_id))
 
         else:
-            event_date = request.form["date"]
-            event_time = request.form["time"]
-            event_description = request.form["description"]
+            raw_date = request.form.get("date")
+            raw_time = request.form.get("time")
+            event_description = request.form.get("description")
 
-            event.date = event_date
-            event.time = event_time
-            event.description = event_description
+            if raw_date:
+                event.date = datetime.strptime(raw_date, "%Y-%m-%d").date()
+            if raw_time:
+                event.time = datetime.strptime(raw_time[:5], "%H:%M").time()
+
+            if event_description:
+                event.description = event_description
 
             db.session.commit()
 

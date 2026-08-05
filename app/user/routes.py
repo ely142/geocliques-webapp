@@ -77,8 +77,8 @@ def settings():
                 "marker_id": e.marker_id,
                 "clique_name": e.clique.name,
                 "marker_name": e.marker.description,
-                "date": e.date,
-                "time": e.time,
+                "date": e.date.isoformat(),
+                "time": e.time.strftime("%H:%M"),
                 "description": e.description,
             }
         )

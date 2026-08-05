@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import date, datetime
+from typing import Optional
 
 from flask_login import UserMixin
-from sqlalchemy import Float, ForeignKey, Integer, String
+from sqlalchemy import Date, Float, ForeignKey, Integer, String, Text, Time
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.extensions import db, login_manager
@@ -29,9 +30,9 @@ class Clique(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
-    description: Mapped[str] = mapped_column(String(200))
+    description: Mapped[Optional[str]] = mapped_column(Text)
     visibility: Mapped[str] = mapped_column(String(200))
-    date_created: Mapped[str] = mapped_column(String(100))
+    date_created: Mapped[date] = mapped_column(Date, default=date.today)
     admin_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     icon: Mapped[str] = mapped_column(String(100))
 
@@ -46,7 +47,7 @@ class CliqueUser(db.Model):
     __tablename__ = "clique_user"
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
     clique_id: Mapped[int] = mapped_column(ForeignKey("cliques.id"), primary_key=True)
-    joined_date: Mapped[str] = mapped_column(String(100))
+    joined_date: Mapped[date] = mapped_column(Date, default=date.today)
 
     user = relationship("User", back_populates="cliques")
     clique = relationship("Clique", back_populates="users")
@@ -58,7 +59,7 @@ class UserMarker(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
     marker_id: Mapped[int] = mapped_column(ForeignKey("markers.id"), primary_key=True)
     clique_id: Mapped[int] = mapped_column(ForeignKey("cliques.id"), primary_key=True)
-    creation_date: Mapped[str] = mapped_column(String(100), default=lambda: datetime.today().strftime("%Y-%m-%d"))
+    creation_date: Mapped[date] = mapped_column(Date, default=date.today)
 
     user = relationship("User", back_populates="markers")
     clique = relationship("Clique", back_populates="markers")
@@ -71,7 +72,7 @@ class Marker(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     lat: Mapped[float] = mapped_column(Float, nullable=False)
     long: Mapped[float] = mapped_column(Float, nullable=False)
-    description: Mapped[str] = mapped_column(String(255), nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text)
     total_reviews: Mapped[int] = mapped_column(Integer, default=0)
     average_review: Mapped[float] = mapped_column(Float, default=0.0)
 
@@ -85,10 +86,10 @@ class Review(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     stars: Mapped[int] = mapped_column(Integer, nullable=False)  # 1 to 5
-    commentary: Mapped[str] = mapped_column(String(500), nullable=True)
+    commentary: Mapped[Optional[str]] = mapped_column(Text)
     marker_id: Mapped[int] = mapped_column(ForeignKey("markers.id"), nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    creation_date: Mapped[str] = mapped_column(String(100), default=lambda: datetime.today().strftime("%Y-%m-%d"))
+    creation_date: Mapped[date] = mapped_column(Date, default=date.today)
 
     marker = relationship("Marker", back_populates="reviews")
     user = relationship("User", back_populates="reviews")
@@ -110,9 +111,9 @@ class Event(db.Model):
     __tablename__ = "events"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    date: Mapped[str] = mapped_column(String(100))
-    time: Mapped[str] = mapped_column(String(10))
-    description: Mapped[str] = mapped_column(String(500), nullable=True)
+    date: Mapped[datetime.date] = mapped_column(Date)
+    time: Mapped[datetime.time] = mapped_column(Time)
+    description: Mapped[Optional[str]] = mapped_column(Text)
     marker_id: Mapped[int] = mapped_column(ForeignKey("markers.id"), nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     clique_id: Mapped[int] = mapped_column(ForeignKey("cliques.id"), nullable=False)
@@ -127,8 +128,8 @@ class BannedUser(db.Model):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
     clique_id: Mapped[int] = mapped_column(ForeignKey("cliques.id"), primary_key=True)
-    reason: Mapped[str] = mapped_column(String(100), nullable=True)
-    ban_date: Mapped[str] = mapped_column(String(100), default=lambda: datetime.today().strftime("%Y-%m-%d"))
+    reason: Mapped[Optional[str]] = mapped_column(Text)
+    ban_date: Mapped[date] = mapped_column(Date, default=date.today)
 
     user = relationship("User", back_populates="banned_users")
     clique = relationship("Clique", back_populates="banned_users")
