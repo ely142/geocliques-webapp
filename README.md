@@ -51,7 +51,13 @@ This platform bridges that gap by providing a dedicated, map-based hub built spe
 
 ## 🚀 Getting Started
 
-Follow these steps to set up and run the project locally.
+### Prerequisites
+Ensure the following are installed on the host system:
+* **Python**: `v3.10+` *(verified on v3.12.3)*
+* **Docker Engine**: `v20.10+` *(verified on v29.6.1)*
+* **Docker Compose**: `v2.0+` *(verified on v5.3.0)*
+
+---
 
 ### 1. Clone the Repository
 ```bash
@@ -80,23 +86,34 @@ pip install -r requirements.txt
 ```
 ### 4. Configure Environment Variables
 
-Create a `.env` file in the root directory.
+Create a local `.env` file in the root directory from the provided template.
 
-> 💡Note: The .env file is listed in .gitignore to prevent sensitive keys from being pushed to the repository. You must create this file manually.
-
-Add the following keys to your `.env` file:
+**On WSL / Linux / macOS:**
 ```bash
-FLASK_APP=run.py
-FLASK_DEBUG=1
-SECRET_KEY="your_super_secret_key_here"
-DATABASE_URL="sqlite:///users.db" # Optional: Defaults to this SQLite path if left blank
-
-# Optional: Third-Party Integrations
-MAP_THUNDERFOREST_KEY="your_api_key_here" # Enables Thunderforest map tile layers
+cp .env.example .env
 ```
-### 5. Run the Application
 
-Execute `run.py` to start the server. This entry point establishes the Application Factory context, automatically generating the local SQLite database and its tables on the first run.
+**On Windows:**
+```bash
+copy .env.example .env
+```
+
+> 💡Note: The .env file is git-ignored. Update it with your local credentials. Both Docker and Flask strictly require this file to boot successfully.
+
+### 5. Boot Database Infrastructure
+Start the PostgreSQL container. Docker provisions the database using the variables defined in `.env`.
+```bash
+docker compose up -d
+```
+
+Verify the database service is healthy and accepting connections before proceeding:
+```bash
+docker compose ps
+```
+
+### 6. Run the Application
+
+Execute `run.py` to start the server. This entry point establishes the Application Factory context and connects to the running PostgreSQL database.
 
 **On WSL / Linux / macOS:**
 ```bash
@@ -107,7 +124,7 @@ python3 run.py
 ```bash
 python run.py
 ```
-The application will now be running on http://127.0.0.1:5000.
+The application will now be running on http://127.0.0.1:5000. 
 
 ## 🧪 Testing
 
