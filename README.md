@@ -196,6 +196,5 @@ This repository serves as a stable, functional baseline. Updates are pushed iter
 **Active areas of exploration:**
 * **Query Optimization:** Refactoring ORM queries to resolve N+1 bottlenecks and speed up data retrieval.
 * **AI Integration:** Integrating AI capabilities for intelligent platform features.
-* **Database Scaling:** Migrating infrastructure from SQLite to PostgreSQL.
 * **Map Infrastructure:** Transitioning to keyless, open-source map tile providers.
 * **Code Quality:** Enforcing strict Python type-safety and modern linting.
