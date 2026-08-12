@@ -186,9 +186,109 @@ geocliques-webapp/
 
 * **Client-Side State Management:** Map marker filtering by clique is handled natively on the frontend via Leaflet's `L.geoJSON`. By transferring the full data payload to the browser, redundant database queries are eliminated, resulting in instantaneous UI updates via local DOM manipulation.
 
-* **Relational Database Architecture:** Core persistence utilizes containerized PostgreSQL 17 to enforce type strictness and establish dev/prod parity. Complex ternary relationships (e.g., User, Marker, Clique) are managed via normalized SQLAlchemy association models, storing contextual metadata directly on join tables to optimize query execution.
+* **Relational Database Architecture:** Core persistence utilizes containerized PostgreSQL 17 to enforce type strictness and establish dev/prod parity. Complex ternary relationships (e.g., User, Marker, Clique) are managed via SQLAlchemy association models, storing contextual metadata directly on join tables to optimize query execution.
 
 * **Referential Integrity & Cascades:** To preserve community-shared location data when a user departs, programmatic deletion cascades enforce strict referential integrity without relying on anti-patterns like ghost user IDs. During account deletion or clique detachment, orphaned map markers are dynamically reassigned to the active clique admin via an admin inheritance pattern. Conversely, markers solely reviewed by the departing user are explicitly purged to prevent fragmentation.
+
+## 🗄️ Database Architecture
+
+```mermaid
+erDiagram
+  users {
+      integer id PK
+      varchar(100) name
+      varchar(100) email UK
+      varchar(100) password
+      varchar(150) picture
+  }
+  
+  cliques {
+      integer id PK
+      varchar(100) name
+      text description
+      varchar(200) visibility
+      date date_created
+      integer admin_id FK
+      varchar(100) icon
+  }
+
+  markers {
+      integer id PK
+      float lat
+      float long
+      text description
+      integer total_reviews
+      float average_review
+  }
+
+  clique_user {
+      integer user_id PK, FK
+      integer clique_id PK, FK
+      date joined_date
+  }
+
+  user_marker {
+      integer user_id PK, FK
+      integer marker_id PK, FK
+      integer clique_id PK, FK
+      date creation_date
+  }
+
+  reviews {
+      integer id PK
+      integer stars
+      text commentary
+      integer marker_id FK
+      integer user_id FK
+      date creation_date
+  }
+
+  events {
+      integer id PK
+      date date
+      time time
+      text description
+      integer marker_id FK
+      integer user_id FK
+      integer clique_id FK
+  }
+
+  notifications {
+      integer id PK
+      varchar(100) type
+      integer user_id FK
+      integer clique_id FK
+  }
+
+  banned_users {
+      integer user_id PK, FK
+      integer clique_id PK, FK
+      text reason
+      date ban_date
+  }
+
+  %% Relationships
+  users ||--o{ cliques : "administers"
+  users ||--o{ clique_user : "joins"
+  cliques ||--o{ clique_user : "contains"
+  
+  users ||--o{ user_marker : "creates"
+  markers ||--o{ user_marker : "is tracked via"
+  cliques ||--o{ user_marker : "scopes"
+  
+  users ||--o{ reviews : "writes"
+  markers ||--o{ reviews : "receives"
+  
+  users ||--o{ events : "hosts"
+  markers ||--o{ events : "locates"
+  cliques ||--o{ events : "scopes"
+
+  users ||--o{ notifications : "receives"
+  cliques ||--o{ notifications : "triggers"
+
+  users ||--o{ banned_users : "is banned"
+  cliques ||--o{ banned_users : "bans"
+  ```
 
 ## 🚧 Development Roadmap
 This repository serves as a stable, functional baseline. Updates are pushed iteratively as new architectural patterns are evaluated.
